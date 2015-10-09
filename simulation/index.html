@@ -17,7 +17,9 @@
         drone_height = 3,
         drone_width = 8,
         starting_height = 10,
-        gravity_strength = 30,
+        drone_body_weight = 1000,
+        drone_motor_weight = 500,
+        gravity_strength = 9.8 * 5,
         motor_strength = gravity_strength * 100;
 
     Physijs.scripts.worker = 'js/physijs_worker.js';
@@ -127,7 +129,7 @@
         drone.body = new Physijs.BoxMesh(
             new THREE.BoxGeometry(drone_depth, drone_height, drone_width),
             drone_material,
-            1000
+            drone_body_weight
         );
 
         drone.body.position.y = starting_height;
@@ -137,7 +139,7 @@
         drone.motor_fl = new Physijs.CylinderMesh(
             motor_geometry,
             motor_material,
-            500
+            drone_motor_weight
         );
 
         drone.motor_fl.position.set(-drone_depth / 2, starting_height, drone_width);
