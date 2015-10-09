@@ -16,7 +16,9 @@
     var drone_depth = 12,
         drone_height = 3,
         drone_width = 8,
-        starting_height = 10;
+        starting_height = 10,
+        gravity_strength = 30,
+        motor_strength = gravity_strength * 100;
 
     Physijs.scripts.worker = 'js/physijs_worker.js';
     Physijs.scripts.ammo = 'ammo.js';
@@ -48,7 +50,8 @@
         document.getElementById('viewport').appendChild(physics_stats.domElement);
 
         scene = new Physijs.Scene;
-        scene.setGravity(new THREE.Vector3(0, -30, 0));
+        scene.setGravity(new THREE.Vector3(0, -gravity_strength, 0));
+
         scene.addEventListener(
             'update',
             function() {
@@ -63,6 +66,7 @@
             1,
             1000
         );
+
         camera.position.set(60, 50, 60);
         camera.lookAt(scene.position);
         scene.add(camera);
@@ -136,7 +140,6 @@
             500
         );
 
-        // drone.motor_fl.rotation.x = 0;
         drone.motor_fl.position.set(-drone_depth / 2, starting_height, drone_width);
         drone.motor_fl.receiveShadow = drone.motor_fl.castShadow = true;
         scene.add(drone.motor_fl);
@@ -164,7 +167,6 @@
             500
         );
 
-        // drone.motor_fr.rotation.x = 0;
         drone.motor_fr.position.set(-drone_depth / 2, starting_height, -drone_width);
         drone.motor_fr.receiveShadow = drone.motor_fr.castShadow = true;
         scene.add(drone.motor_fr);
@@ -247,6 +249,19 @@
 
         requestAnimationFrame(render);
         scene.simulate();
+
+        document.addEventListener(
+            'keydown',
+            function(event) {
+                switch (event.keyCode) {
+                    case 38:
+                        drone.motor_fl.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
+                        drone.motor_fr.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
+                        drone.motor_bl.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
+                        drone.motor_br.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
+                }
+            }
+        );
     };
 
     render = function() {
