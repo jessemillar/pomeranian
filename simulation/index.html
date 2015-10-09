@@ -17,10 +17,10 @@
         drone_height = 3,
         drone_width = 8,
         starting_height = 10,
-        drone_body_weight = 1000,
-        drone_motor_weight = 500,
-        gravity_strength = 9.8 * 5,
-        motor_strength = gravity_strength * 100;
+        drone_body_weight = 0.2,
+        drone_motor_weight = 0.1,
+        gravity_strength = 9.8,
+        motor_strength = gravity_strength / 3;
 
     Physijs.scripts.worker = 'js/physijs_worker.js';
     Physijs.scripts.ammo = 'ammo.js';
@@ -166,7 +166,7 @@
         drone.motor_fr = new Physijs.CylinderMesh(
             motor_geometry,
             motor_material,
-            500
+            drone_motor_weight
         );
 
         drone.motor_fr.position.set(-drone_depth / 2, starting_height, -drone_width);
@@ -194,7 +194,7 @@
         drone.motor_bl = new Physijs.CylinderMesh(
             motor_geometry,
             motor_material,
-            500
+            drone_motor_weight
         );
 
         // drone.motor_bl.rotation.x = 0;
@@ -223,7 +223,7 @@
         drone.motor_br = new Physijs.CylinderMesh(
             motor_geometry,
             motor_material,
-            500
+            drone_motor_weight
         );
 
         // drone.motor_br.rotation.x = 0;
