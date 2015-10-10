@@ -19,17 +19,38 @@ document.addEventListener(
     function(event) {
         switch (event.keyCode) {
             case 38:
-                var rotation_matrix = new THREE.Matrix4().extractRotation(drone.body.matrix);
-                var force_vector = new THREE.Vector3(0, motor_strength, 0).applyMatrix4(rotation_matrix);
-
-                drone.motor_fl.applyCentralImpulse(force_vector);
-                drone.motor_fr.applyCentralImpulse(force_vector);
-                drone.motor_bl.applyCentralImpulse(force_vector);
-                drone.motor_br.applyCentralImpulse(force_vector);
+                motor_impulse(1, 1);
+                motor_impulse(2, 1);
+                motor_impulse(3, 1);
+                motor_impulse(4, 1);
         }
     }
 );
 
 setInterval(function() {
-    console.log(drone.body.rotation);
+    console.log(get_tilt());
+
+    // DO STUFF HERE
 }, accelerometer_update_frequency);
+
+var get_tilt = function() {
+    return [drone.body.rotation.x, drone.body.rotation.y, drone.body.rotation.z];
+};
+
+var motor_impulse = function(motor, power_percent) {
+    if (!power_percent) {
+        power_percent = 1;
+    }
+
+    var force_vector = new THREE.Vector3(0, motor_strength * power_percent, 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone.body.matrix));
+
+    if (motor == 1) {
+        drone.motor_fr.applyCentralImpulse(force_vector );
+    } else if (motor == 2) {
+        drone.motor_fl.applyCentralImpulse(force_vector);
+    } else if (motor == 3) {
+        drone.motor_bl.applyCentralImpulse(force_vector);
+    } else if (motor == 4) {
+        drone.motor_br.applyCentralImpulse(force_vector);
+    }
+};
