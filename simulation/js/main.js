@@ -45,7 +45,7 @@ init = function() {
         }
     );
 
-    camera = new THREE.PerspectiveCamera(
+    camera = new THREE.TargetCamera(
         35,
         window.innerWidth / window.innerHeight,
         1,
@@ -73,9 +73,14 @@ init = function() {
     scene.add(light);
 
     // Materials
+    var floorTexture = new THREE.ImageUtils.loadTexture("images/checkerboard.jpg");
+    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set(50, 50);
+
     ground_material = Physijs.createMaterial(
-        new THREE.MeshLambertMaterial({
-            color: 0xffffff
+        new THREE.MeshBasicMaterial({
+            map: floorTexture,
+            side: THREE.DoubleSide
         }),
         .8, // high friction
         .4 // low restitution
@@ -83,7 +88,7 @@ init = function() {
 
     // Ground
     ground = new Physijs.BoxMesh(
-        new THREE.BoxGeometry(100, 1, 100),
+        new THREE.BoxGeometry(50, 1, 50),
         ground_material,
         0 // mass
     );
@@ -92,16 +97,16 @@ init = function() {
 
     // drone
     drone_material = Physijs.createMaterial(
-        new THREE.MeshLambertMaterial({
-            color: 0xbada55
+        new THREE.MeshBasicMaterial({
+            color: 0xff0000
         }),
         .8, // high friction
         .2 // low restitution
     );
 
     motor_material = Physijs.createMaterial(
-        new THREE.MeshLambertMaterial({
-            color: 0xbada55
+        new THREE.MeshBasicMaterial({
+            color: 0xff0000
         }),
         .8, // high friction
         .5 // medium restitution
@@ -134,17 +139,6 @@ init = function() {
     );
 
     scene.addConstraint(drone.motor_fl_constraint);
-    drone.motor_fl_constraint.setAngularLowerLimit({
-        x: 0,
-        y: -Math.PI / 8,
-        z: 1
-    });
-
-    drone.motor_fl_constraint.setAngularUpperLimit({
-        x: 0,
-        y: Math.PI / 8,
-        z: 0
-    });
 
     drone.motor_fr = new Physijs.CylinderMesh(
         motor_geometry,
@@ -162,25 +156,12 @@ init = function() {
 
     scene.addConstraint(drone.motor_fr_constraint);
 
-    drone.motor_fr_constraint.setAngularLowerLimit({
-        x: 0,
-        y: -Math.PI / 8,
-        z: 1
-    });
-
-    drone.motor_fr_constraint.setAngularUpperLimit({
-        x: 0,
-        y: Math.PI / 8,
-        z: 0
-    });
-
     drone.motor_bl = new Physijs.CylinderMesh(
         motor_geometry,
         motor_material,
         drone_motor_weight
     );
 
-    // drone.motor_bl.rotation.x = 0;
     drone.motor_bl.position.set(drone_depth / 2, starting_height, drone_width);
     drone.motor_bl.receiveShadow = drone.motor_bl.castShadow = true;
     scene.add(drone.motor_bl);
@@ -191,25 +172,12 @@ init = function() {
 
     scene.addConstraint(drone.motor_bl_constraint);
 
-    drone.motor_bl_constraint.setAngularLowerLimit({
-        x: 0,
-        y: 0,
-        z: 0
-    });
-
-    drone.motor_bl_constraint.setAngularUpperLimit({
-        x: 0,
-        y: 0,
-        z: 0
-    });
-
     drone.motor_br = new Physijs.CylinderMesh(
         motor_geometry,
         motor_material,
         drone_motor_weight
     );
 
-    // drone.motor_br.rotation.x = 0;
     drone.motor_br.position.set(drone_depth / 2, starting_height, -drone_width);
     drone.motor_br.receiveShadow = drone.motor_br.castShadow = true;
     scene.add(drone.motor_br);
@@ -220,17 +188,17 @@ init = function() {
 
     scene.addConstraint(drone.motor_br_constraint);
 
-    drone.motor_br_constraint.setAngularLowerLimit({
-        x: 0,
-        y: 0,
-        z: 0
+    camera.addTarget({
+        name: "drone",
+        targetObject: drone.body,
+        cameraPosition: new THREE.Vector3(camera_distance, camera_distance, camera_distance),
+        fixed: true,
+        stiffness: 0.1,
+        matchRotation: false
     });
 
-    drone.motor_br_constraint.setAngularUpperLimit({
-        x: 0,
-        y: 0,
-        z: 0
-    });
+    // Now tell this camera to track the target we just created.
+    camera.setTarget("drone");
 
     requestAnimationFrame(render);
     scene.simulate();
@@ -251,6 +219,7 @@ init = function() {
 
 render = function() {
     requestAnimationFrame(render);
+    camera.update();
     renderer.render(scene, camera);
     render_stats.update();
 };
