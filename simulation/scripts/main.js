@@ -1,8 +1,8 @@
 // Measurement values are in SI units; EG: kg, meters, and seconds
 
 var accelerometer_update_frequency = 10,
-    drone_depth = 0.025,
-    drone_height = 0.015,
+    drone_depth = 0.02,
+    drone_height = 0.01,
     drone_width = 0.02,
     motor_diameter = 0.0075,
     starting_height = 1,
