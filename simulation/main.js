@@ -1,13 +1,13 @@
-var scale = 500,
-    drone_depth = 0.025 * scale,
-    drone_height = 0.015 * scale,
-    drone_width = 0.02 * scale,
-    motor_diameter = 0.0075 * scale,
-    starting_height = 10,
-    drone_body_weight = 0.2 * scale,
-    drone_motor_weight = 0.1 * scale,
-    gravity_strength = 9.8 * scale,
-    motor_strength = gravity_strength / 4 * scale;
+var drone_depth = 0.025,
+    drone_height = 0.015,
+    drone_width = 0.02,
+    motor_diameter = 0.0075,
+    starting_height = 1,
+    drone_body_weight = 0.2,
+    drone_motor_weight = 0.1,
+    gravity_strength = 9.8,
+    camera_distance = 2,
+    motor_strength = gravity_strength / 20;
 
 Physijs.scripts.worker = 'js/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
@@ -52,7 +52,7 @@ init = function() {
         1000
     );
 
-    camera.position.set(60, 50, 60);
+    camera.position.set(camera_distance, camera_distance, camera_distance);
     camera.lookAt(scene.position);
     scene.add(camera);
 
