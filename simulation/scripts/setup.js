@@ -1,4 +1,4 @@
-Physijs.scripts.worker = 'js/physijs_worker.js';
+Physijs.scripts.worker = 'scripts/dependencies/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
 
 var drone = {};
