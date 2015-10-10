@@ -1,3 +1,5 @@
+// Measurement values are in SI units; EG: kg, meters, and seconds
+
 var drone_depth = 0.025,
     drone_height = 0.015,
     drone_width = 0.02,
@@ -7,7 +9,9 @@ var drone_depth = 0.025,
     drone_motor_weight = 0.1,
     gravity_strength = 9.8,
     camera_distance = 2,
-    motor_strength = gravity_strength / 20;
+    light_distance = camera_distance * 2,
+    motor_strength = gravity_strength / 25,
+    floor_size = 10;
 
 Physijs.scripts.worker = 'js/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
@@ -58,7 +62,7 @@ init = function() {
 
     // Light
     light = new THREE.DirectionalLight(0xFFFFFF);
-    light.position.set(20, 40, -15);
+    light.position.set(light_distance, light_distance, light_distance);
     light.target.position.copy(scene.position);
     light.castShadow = true;
     light.shadowCameraLeft = -60;
@@ -67,7 +71,7 @@ init = function() {
     light.shadowCameraBottom = 60;
     light.shadowCameraNear = 20;
     light.shadowCameraFar = 200;
-    light.shadowBias = -.0001
+    light.shadowBias = -.0001;
     light.shadowMapWidth = light.shadowMapHeight = 2048;
     light.shadowDarkness = .7;
     scene.add(light);
@@ -75,7 +79,7 @@ init = function() {
     // Materials
     var floorTexture = new THREE.ImageUtils.loadTexture("images/checkerboard.jpg");
     floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set(50, 50);
+    floorTexture.repeat.set(floor_size, floor_size);
 
     ground_material = Physijs.createMaterial(
         new THREE.MeshBasicMaterial({
@@ -88,7 +92,7 @@ init = function() {
 
     // Ground
     ground = new Physijs.BoxMesh(
-        new THREE.BoxGeometry(50, 1, 50),
+        new THREE.BoxGeometry(floor_size, 1, floor_size),
         ground_material,
         0 // mass
     );
@@ -208,10 +212,13 @@ init = function() {
         function(event) {
             switch (event.keyCode) {
                 case 38:
-                    drone.motor_fl.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
-                    drone.motor_fr.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
-                    drone.motor_bl.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
-                    drone.motor_br.applyCentralImpulse(new THREE.Vector3(0, motor_strength, 0));
+                    console.log(drone.body.rotation);
+                    var rotation_matrix = new THREE.Matrix4().extractRotation(drone.body.matrix);
+                    var force_vector = new THREE.Vector3(0, motor_strength, 0).applyMatrix4(rotation_matrix);
+                    drone.motor_fl.applyCentralImpulse(force_vector);
+                    drone.motor_fr.applyCentralImpulse(force_vector);
+                    drone.motor_bl.applyCentralImpulse(force_vector);
+                    drone.motor_br.applyCentralImpulse(force_vector);
             }
         }
     );
