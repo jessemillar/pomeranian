@@ -4,10 +4,10 @@ var scale = 500,
     drone_width = 0.02 * scale,
     motor_diameter = 0.0075 * scale,
     starting_height = 10,
-    drone_body_weight = 0.2,
-    drone_motor_weight = 0.1,
-    gravity_strength = 9.8,
-    motor_strength = gravity_strength / 4;
+    drone_body_weight = 0.2 * scale,
+    drone_motor_weight = 0.1 * scale,
+    gravity_strength = 9.8 * scale,
+    motor_strength = gravity_strength / 4 * scale;
 
 Physijs.scripts.worker = 'js/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
