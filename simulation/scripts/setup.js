@@ -44,6 +44,7 @@ init = function() {
 
     ground_material = Physijs.createMaterial(
         new THREE.MeshBasicMaterial({
+            color: 0x7fdbff,
             wireframe: true
         }),
         .8, // high friction

@@ -8,7 +8,7 @@ var get_tilt = function() {
     return tilt;
 };
 
-var motor_impulse = function(motor, strength) {
+var motor_impulse = function(motor, strength) { // This isn't working currently...
     var force_vector = new THREE.Vector3(0, strength, 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
 
     if (motor == 1) {
