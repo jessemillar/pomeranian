@@ -145,7 +145,7 @@ init = function() {
     });
 
     camera.setTarget("drone"); // Now tell this camera to track the target we just created.
-    camera.update(); // Use this one for a stationary camera
+    // camera.update(); // Use this one for a stationary camera
 
     requestAnimationFrame(render);
     scene.simulate();
@@ -153,7 +153,7 @@ init = function() {
 
 render = function() {
     requestAnimationFrame(render);
-    // camera.update();
+    camera.update();
     renderer.render(scene, camera);
     render_stats.update();
 };
