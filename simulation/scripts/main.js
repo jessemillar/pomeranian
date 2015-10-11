@@ -1,7 +1,6 @@
 // Measurement values are in SI units; EG: kg, meters, and seconds
 
-var accelerometer_update_frequency = 10,
-    drone_depth = 0.02,
+var drone_depth = 0.02,
     drone_height = 0.01,
     drone_width = 0.02,
     motor_diameter = 0.0075,
@@ -27,14 +26,16 @@ document.addEventListener( // For development purposes only
     }
 );
 
-setInterval(function() {
+var main = function () {
     // console.log(get_tilt());
 
     hover();
-}, accelerometer_update_frequency);
+
+    console.log(drone_body.position);
+};
 
 var hover = function() {
-    var hover_force = gravity_strength / 9;
+    var hover_force = gravity_strength / 4;
 
     motor_impulse(1, hover_force);
     motor_impulse(2, hover_force);

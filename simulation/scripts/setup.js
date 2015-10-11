@@ -28,7 +28,8 @@ init = function() {
     scene.addEventListener(
         'update',
         function() {
-            scene.simulate(undefined, 2);
+            main();
+            scene.simulate(undefined, 1);
             physics_stats.update();
         }
     );
@@ -36,8 +37,8 @@ init = function() {
     camera = new THREE.TargetCamera(
         35,
         window.innerWidth / window.innerHeight,
-        1,
-        1000
+        0.1,
+        500
     );
 
     scene.add(camera);
@@ -53,10 +54,11 @@ init = function() {
 
     // Ground
     ground = new Physijs.BoxMesh(
-        new THREE.BoxGeometry(floor_size, 0.005, floor_size), // Get as close to a plane as possible
+        new THREE.BoxGeometry(floor_size, 0.25, floor_size), // Get as close to a plane as possible
         ground_material,
         0 // mass
     );
+    ground.position.y = -0.25 / 2;
     scene.add(ground);
 
     // Drone
@@ -65,8 +67,8 @@ init = function() {
             color: 0x0074d9,
             wireframe: true
         }),
-        .8, // high friction
-        .2 // low restitution
+        0.1,
+        0
     );
 
     front_motor_material = Physijs.createMaterial(
@@ -74,8 +76,8 @@ init = function() {
             color: 0xff0000,
             wireframe: true
         }),
-        .8, // high friction
-        .5 // medium restitution
+        0.1,
+        0
     );
 
     back_motor_material = Physijs.createMaterial(
@@ -83,8 +85,8 @@ init = function() {
             color: 0xffdc00,
             wireframe: true
         }),
-        .8, // high friction
-        .5 // medium restitution
+        0.1,
+        0
     );
 
     motor_geometry = new THREE.CylinderGeometry(motor_diameter, motor_diameter, drone_height / 2, 5);
@@ -135,9 +137,6 @@ init = function() {
 
     scene.add(drone_body);
 
-    console.log(drone_body);
-    console.log(drone_body.children[0]);
-
     camera.addTarget({
         name: "drone",
         targetObject: drone_body,
@@ -148,6 +147,7 @@ init = function() {
     });
 
     camera.setTarget("drone"); // Now tell this camera to track the target we just created.
+    camera.update(); // Use this one for a stationary camera
 
     requestAnimationFrame(render);
     scene.simulate();
@@ -155,7 +155,7 @@ init = function() {
 
 render = function() {
     requestAnimationFrame(render);
-    camera.update();
+    // camera.update();
     renderer.render(scene, camera);
     render_stats.update();
 };
