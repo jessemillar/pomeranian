@@ -5,14 +5,14 @@ var accelerometer_update_frequency = 10,
     drone_height = 0.01,
     drone_width = 0.02,
     motor_diameter = 0.0075,
-    starting_height = 1,
+    starting_height = 0.25,
     drone_body_weight = 0.2,
     drone_motor_weight = 0.1,
     gravity_strength = 9.8,
     camera_distance = 1.25,
     light_distance = camera_distance * 2,
     motor_strength = gravity_strength * 2,
-    floor_size = 10;
+    floor_size = 5;
 
 document.addEventListener( // For development purposes only
     'keydown',
@@ -31,8 +31,6 @@ setInterval(function() {
     // console.log(get_tilt());
 
     hover();
-
-    // DO STUFF HERE
 }, accelerometer_update_frequency);
 
 var hover = function() {
