@@ -1,8 +1,6 @@
 Physijs.scripts.worker = 'scripts/dependencies/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
 
-var drone = {};
-
 init = function() {
     projector = new THREE.Projector;
 
@@ -35,10 +33,10 @@ init = function() {
     );
 
     camera = new THREE.TargetCamera(
-        35,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        500
+        35, // Field of view
+        window.innerWidth / window.innerHeight, // Aspect ratio
+        0.1, // Near field
+        100 // Far field
     );
 
     scene.add(camera);
