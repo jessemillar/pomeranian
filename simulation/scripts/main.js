@@ -13,22 +13,17 @@ var drone_depth = 0.02,
     camera_distance = 1.25,
     light_distance = camera_distance * 2,
     motor_strength = gravity_strength * 2,
-    floor_size = 5,
-    lift = 0.47, // 0.49 for lift from stationary...?
-    lift_increment = 0.0005;
+    floor_size = 5;
 
 document.addEventListener( // For development purposes only
     'keydown',
     function(event) {
         switch (event.keyCode) {
             case 38:
-                lift += lift_increment;
-                console.log(lift);
-
-                // motor_impulse(1, 1);
-                // motor_impulse(2, 1);
-                // motor_impulse(3, 1);
-                // motor_impulse(4, 1);
+                motor_impulse(1, 1);
+                motor_impulse(2, 1);
+                motor_impulse(3, 1);
+                motor_impulse(4, 1);
         }
     }
 );
@@ -42,20 +37,10 @@ var main = function () {
 };
 
 var hover = function() {
-    // if (drone_body.position.y > previous_height) {
-    //     hover_force -= increment;
-    //     console.log(hover_force);
-    // } else if (drone_body.position.y < previous_height) {
-    //     hover_force += increment;
-    //     console.log(hover_force);
-    // }
+    var force = gravity_strength / 20;
 
-    // previous_height = drone_body.position.y;
-
-    // var hover_force = lift;
-
-    motor_impulse(1, lift);
-    motor_impulse(2, lift);
-    motor_impulse(3, lift);
-    motor_impulse(4, lift);
+    motor_impulse(1, force);
+    motor_impulse(2, force);
+    motor_impulse(3, force);
+    motor_impulse(4, force);
 };

@@ -138,7 +138,7 @@ init = function() {
     camera.addTarget({
         name: "drone",
         targetObject: drone_body,
-        cameraPosition: new THREE.Vector3(camera_distance, camera_distance, camera_distance),
+        cameraPosition: new THREE.Vector3(-camera_distance, camera_distance, -camera_distance),
         fixed: true,
         stiffness: 0.1,
         matchRotation: false
