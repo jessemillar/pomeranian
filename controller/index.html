@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Mr. Muggles Controller</title>
+    <style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+    
+    .stick {
+        background-color: #bada55;
+        z-index: 0;
+    }
+    
+    .nub {
+        width: 20%;
+        height: 20%;
+        background-color: #ff0000;
+        z-index: 1;
+    }
+    
+    #left-stick {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 50%;
+        height: 100%;
+    }
+    
+    #right-stick {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 50%;
+        height: 100%;
+    }
+    </style>
+    <script type="text/javascript" src="scripts/main.js"></script>
+</head>
+
+<body>
+    <div id="left-stick" class="stick">
+        <div id="left-nub" class="nub">
+        </div>
+    </div>
+    <div id="right-stick" class="stick">
+        <div id="right-nub" class="nub">
+        </div>
+    </div>
+</body>
+
+</html>
