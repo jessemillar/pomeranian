@@ -1,8 +1,8 @@
 var get_tilt = function() {
     var tilt = {
-        x: drone_body.rotation.x,
-        y: drone_body.rotation.y,
-        z: drone_body.rotation.z
+        x: Math.round(drone_body.rotation.x * (180/Math.PI)),
+        y: Math.round(drone_body.rotation.y * (180/Math.PI)),
+        z: Math.round(drone_body.rotation.z * (180/Math.PI))  
     };
 
     return tilt;

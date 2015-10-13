@@ -10,34 +10,34 @@ var drone_depth = 0.02,
     drone_motor_weight = 0.1,
     drone_weight = drone_body_weight + drone_motor_weight * 4,
     gravity_strength = 9.8,
-    camera_distance = 1.25,
+    camera_distance = 0.25,
     light_distance = camera_distance * 2,
     motor_strength = gravity_strength * 2,
-    floor_size = 5;
+    floor_size = 5,
+    hover_now = false;
 
 document.addEventListener( // For development purposes only
     'keydown',
     function(event) {
         switch (event.keyCode) {
             case 38:
-                motor_impulse(1, 1);
-                motor_impulse(2, 1);
-                motor_impulse(3, 1);
-                motor_impulse(4, 1);
+		hover_now = !hover_now;
         }
     }
 );
 
 var main = function () {
-    // console.log(get_tilt());
+    //console.log(get_tilt());
 
-    hover();
+    if (hover_now) {
+    	hover();
+    }
 
     // console.log(drone_body.position);
 };
 
 var hover = function() {
-    var force = gravity_strength / 20;
+    var force = gravity_strength / 18;
 
     motor_impulse(1, force);
     motor_impulse(2, force);
