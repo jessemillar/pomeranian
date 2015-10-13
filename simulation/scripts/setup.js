@@ -46,8 +46,8 @@ init = function() {
             color: 0x7fdbff,
             wireframe: true
         }),
-        0, // high friction
-        0 // low restitution
+        1,
+        0
     );
 
     // Ground
@@ -56,7 +56,7 @@ init = function() {
         ground_material,
         0 // mass
     );
-    ground.position.y = (-0.24 / 2) - (drone_height / 2);
+    ground.position.y = -0.25 / 2;
     scene.add(ground);
 
     // Drone
@@ -65,7 +65,7 @@ init = function() {
             color: 0x0074d9,
             wireframe: true
         }),
-        0,
+        0.2,
         0
     );
 
@@ -74,7 +74,7 @@ init = function() {
             color: 0xff0000,
             wireframe: true
         }),
-        0,
+        0.3,
         0
     );
 
@@ -83,7 +83,7 @@ init = function() {
             color: 0xffdc00,
             wireframe: true
         }),
-        0,
+        0.3,
         0
     );
 
@@ -95,7 +95,7 @@ init = function() {
         drone_body_weight
     );
 
-    drone_body.position.y = starting_height;
+    drone_body.position.y = starting_height + drone_height / 2;
 
     motor_fr = new Physijs.CylinderMesh(
         motor_geometry,

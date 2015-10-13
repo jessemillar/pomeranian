@@ -1,8 +1,10 @@
 var get_tilt = function() {
+    var decimal_places = 3;
+
     var tilt = {
-        x: Math.round(drone_body.rotation.x * (180/Math.PI)),
-        y: Math.round(drone_body.rotation.y * (180/Math.PI)),
-        z: Math.round(drone_body.rotation.z * (180/Math.PI))  
+        x: (drone_body.rotation.x * (180 / Math.PI)).toFixed(decimal_places),
+        y: (drone_body.rotation.y * (180 / Math.PI)).toFixed(decimal_places),
+        z: (drone_body.rotation.z * (180 / Math.PI)).toFixed(decimal_places)
     };
 
     return tilt;
