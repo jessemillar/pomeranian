@@ -33,6 +33,26 @@ document.addEventListener( // For development purposes only
     }
 );
 
+document.addEventListener( // For mobile simulation development
+    'touchstart',
+    function(event) {
+        if (event.targetTouches.length == 1) {
+            var screen_height = window.innerHeight;
+
+            if (touch.pageY < screen_height / 3) {
+                motor_power = !motor_power;
+                console.log("Toggling motors");
+            } else if (touch.pageY > screen_height / 3 && touch.pageY < (screen_height - screen_height / 3)) {
+                motor_level -= motor_increment;
+                console.log("Increasing motor power");
+            } else if (touch.pageY < (screen_height / 3 * 2)) {
+                motor_level += motor_increment;
+                console.log("Decreasing motor power");
+            }
+        }
+    }
+);
+
 var main = function() {
     console.log(get_tilt());
 
