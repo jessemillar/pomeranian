@@ -1,3 +1,7 @@
+document.ontouchmove = function(event) { // Disable scroll
+    event.preventDefault();
+};
+
 var left_stick = document.getElementById('left-stick'),
     left_nub = document.getElementById('left-nub'),
     stick_width = document.getElementById('left-stick').offsetWidth,
