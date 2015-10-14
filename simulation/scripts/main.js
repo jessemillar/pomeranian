@@ -10,7 +10,7 @@ var drone_depth = 0.02,
     drone_motor_weight = 0.1,
     drone_weight = drone_body_weight + drone_motor_weight * 4,
     gravity_strength = 9.8,
-    camera_distance = 0.25,
+    camera_distance = 1,
     floor_size = 5,
     motor_power = true,
     motor_level = 0.2, // Modifier of gravity
@@ -71,14 +71,14 @@ var main = function() {
     }
 
     // console.log(drone_body.position);
+
+    update_helper_arrows();
 };
 
 var hover = function() {
-    // motor_thrust[0].force = gravity_strength / 4 * motor_level;
-    motor_thrust[0].force = 0;
+    motor_thrust[0].force = gravity_strength / 4 * motor_level;
+    motor_thrust[1].force = gravity_strength / 4 * motor_level;
     motor_thrust[2].force = gravity_strength / 4 * motor_level;
-    // motor_thrust[2].force = gravity_strength / 4 * motor_level;
-    motor_thrust[1].force = 0;
     motor_thrust[3].force = gravity_strength / 4 * motor_level;
 
     motor_impulse();

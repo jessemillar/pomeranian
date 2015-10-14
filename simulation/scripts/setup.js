@@ -1,7 +1,7 @@
 Physijs.scripts.worker = 'scripts/dependencies/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
 
-var debug_arrow_fr, debug_arrow_fl, debug_arrow_bl, debug_arrow_br; // Make these global because ghetto
+var debug_arrow_fr, debug_arrow_fl, debug_arrow_bl, debug_arrow_br, debug_arrow_gravity; // Make these global because ghetto
 
 init = function() {
     projector = new THREE.Projector;
@@ -30,7 +30,6 @@ init = function() {
         function() {
             main();
             scene.simulate(undefined, 1);
-            update_helper_arrows();
             physics_stats.update();
         }
     );
@@ -164,6 +163,12 @@ init = function() {
     }
 
     scene.add(drone_body);
+
+    if (debug) {
+        debug_arrow_gravity = new THREE.ArrowHelper(1, new THREE.Vector3(drone_body.position.x, drone_body.position.y, drone_body.position.z), 1, 0xff0000);
+
+        scene.add(debug_arrow_gravity);
+    }
 
     camera.addTarget({
         name: "drone",
