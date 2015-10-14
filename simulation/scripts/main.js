@@ -11,7 +11,6 @@ var drone_depth = 0.02,
     drone_weight = drone_body_weight + drone_motor_weight * 4,
     gravity_strength = 9.8,
     camera_distance = 0.25,
-    motor_strength = gravity_strength * 2,
     floor_size = 5,
     motor_power = false,
     motor_level = 20, // Modifier of gravity
@@ -20,7 +19,23 @@ var drone_depth = 0.02,
 document.addEventListener( // For development purposes only
     'keydown',
     function(event) {
-        if (event.keyCode == 32) {
+        if (event.keyCode == 13) {
+            console.log("Adding death box");
+
+            var death_box = new Physijs.BoxMesh(
+                new THREE.BoxGeometry(drone_height, drone_height * 3, drone_height),
+                ground_material,
+                drone_weight / 20 // mass
+            );
+
+            death_box.position.x = drone_body.position.x - drone_width / 2;
+            death_box.position.y = drone_body.position.y + 0.05;
+            death_box.position.z = drone_body.position.z - drone_width / 2;
+
+            death_box.setCcdMotionThreshold(drone_height / 2);
+
+            scene.add(death_box);
+        } else if (event.keyCode == 32) {
             motor_power = !motor_power;
             console.log("Toggling motors");
         } else if (event.keyCode == 38) {
@@ -33,28 +48,8 @@ document.addEventListener( // For development purposes only
     }
 );
 
-document.addEventListener( // For mobile simulation development
-    'touchstart',
-    function(event) {
-        if (event.targetTouches.length == 1) {
-            var screen_height = window.innerHeight;
-
-            if (touch.pageY < screen_height / 3) {
-                motor_power = !motor_power;
-                console.log("Toggling motors");
-            } else if (touch.pageY > screen_height / 3 && touch.pageY < (screen_height - screen_height / 3)) {
-                motor_level -= motor_increment;
-                console.log("Increasing motor power");
-            } else if (touch.pageY < (screen_height / 3 * 2)) {
-                motor_level += motor_increment;
-                console.log("Decreasing motor power");
-            }
-        }
-    }
-);
-
 var main = function() {
-    console.log(get_tilt());
+    // console.log(get_tilt());
 
     if (motor_power) {
         hover();
