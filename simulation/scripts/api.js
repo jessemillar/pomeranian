@@ -1,4 +1,4 @@
-var get_tilt = function() {
+var getTilt = function() {
     var decimal_places = 3;
 
     var tilt = {
@@ -10,7 +10,19 @@ var get_tilt = function() {
     return tilt;
 };
 
-var impulse_motors = function() {
+var getPosition = function() {
+    var decimal_places = 3;
+
+    var tilt = {
+        x: (drone_body.position.x).toFixed(decimal_places),
+        y: (drone_body.position.y).toFixed(decimal_places),
+        z: (drone_body.position.z).toFixed(decimal_places)
+    };
+
+    return tilt;
+};
+
+var impulseMotors = function() {
     motor_thrust[0].angle = new THREE.Vector3(0, motor_thrust[0].force, 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
     drone_body.applyForce(motor_thrust[0].angle, new THREE.Vector3(-drone_depth, 0, -drone_width));
 
@@ -24,7 +36,16 @@ var impulse_motors = function() {
     drone_body.applyForce(motor_thrust[3].angle, new THREE.Vector3(drone_depth, 0, -drone_width));
 };
 
-var update_helper_arrows = function() {
+var safetySwitch = function() {
+    var rotation = getTilt();
+
+    if (motor_power && Math.round(Math.abs(rotation.x)) == 180 || Math.round(Math.abs(rotation.z)) == 180) { // Turn off the motors if we turn upside down
+        console.log("Killing the power");
+        motor_power = false;
+    }
+};
+
+var helperArrows = function() {
     if (debug) {
         var temp_position;
 
@@ -98,6 +119,6 @@ var update_helper_arrows = function() {
         debug_arrow_gravity.position.y = temp_position.y;
         debug_arrow_gravity.position.z = temp_position.z;
         debug_arrow_gravity.setDirection(new THREE.Vector3(0, 1, 0).normalize().negate());
-        debug_arrow_gravity.setLength(gravity_strength, drone_height / 2, drone_height / 2);
+        debug_arrow_gravity.setLength(gravity_strength / 4, drone_height / 2, drone_height / 2);
     }
 };

@@ -3,16 +3,16 @@
 var drone_depth = 0.02,
     drone_height = 0.01,
     drone_width = 0.02,
-    motor_diameter = 0.0075,
+    motor_diameter = 0.008,
     starting_height = 0,
     previous_height = starting_height,
     drone_body_weight = 0.2,
     drone_motor_weight = 0.1,
     drone_weight = drone_body_weight + drone_motor_weight * 4,
     gravity_strength = 9.8,
-    camera_distance = 1,
+    camera_distance = 0.75,
     floor_size = 5,
-    motor_power = true,
+    motor_power = false,
     motor_level = 0.2, // Modifier of gravity
     motor_increment = 0.005,
     motor_thrust = [{ // angle is for auto computation in api.js
@@ -30,7 +30,7 @@ var drone_depth = 0.02,
     }],
     debug = true;
 
-document.addEventListener( // For development purposes only
+document.addEventListener(
     'keydown',
     function(event) {
         if (event.keyCode == 13) {
@@ -64,15 +64,14 @@ document.addEventListener( // For development purposes only
 );
 
 var main = function() {
-    // console.log(get_tilt());
+    console.log(getPosition(), getTilt());
 
     if (motor_power) {
         hover();
     }
 
-    // console.log(drone_body.position);
-
-    update_helper_arrows();
+    safetySwitch();
+    helperArrows();
 };
 
 var hover = function() {
@@ -81,5 +80,5 @@ var hover = function() {
     motor_thrust[2].force = gravity_strength / 4 * motor_level;
     motor_thrust[3].force = gravity_strength / 4 * motor_level;
 
-    impulse_motors();
+    impulseMotors();
 };

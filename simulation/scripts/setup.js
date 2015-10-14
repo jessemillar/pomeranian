@@ -67,7 +67,7 @@ init = function() {
             color: 0x0074d9,
             wireframe: true
         }),
-        0.2,
+        0.75,
         0
     );
 
@@ -76,7 +76,7 @@ init = function() {
             color: 0xff0000,
             wireframe: true
         }),
-        0.3,
+        0.75,
         0
     );
 
@@ -85,7 +85,7 @@ init = function() {
             color: 0xffdc00,
             wireframe: true
         }),
-        0.3,
+        0.75,
         0
     );
 
