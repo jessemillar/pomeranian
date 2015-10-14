@@ -97,6 +97,9 @@ init = function() {
 
     drone_body.position.y = starting_height + drone_height / 2;
 
+    drone_body.setCcdMotionThreshold(drone_height / 2);
+    drone_body.setCcdSweptSphereRadius(drone_height / 2);
+
     motor_fr = new Physijs.CylinderMesh(
         motor_geometry,
         front_motor_material,

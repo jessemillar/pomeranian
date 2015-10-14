@@ -4,7 +4,7 @@ var drone_depth = 0.02,
     drone_height = 0.01,
     drone_width = 0.02,
     motor_diameter = 0.0075,
-    starting_height = 0.1,
+    starting_height = 0,
     previous_height = starting_height,
     drone_body_weight = 0.2,
     drone_motor_weight = 0.1,
@@ -12,7 +12,7 @@ var drone_depth = 0.02,
     gravity_strength = 9.8,
     camera_distance = 0.25,
     floor_size = 5,
-    motor_power = false,
+    motor_power = true,
     motor_level = 20, // Modifier of gravity
     motor_increment = 0.05;
 
@@ -23,16 +23,17 @@ document.addEventListener( // For development purposes only
             console.log("Adding death box");
 
             var death_box = new Physijs.BoxMesh(
-                new THREE.BoxGeometry(drone_height, drone_height * 3, drone_height),
+                new THREE.BoxGeometry(drone_height, drone_height, drone_height),
                 ground_material,
-                drone_weight / 20 // mass
+                drone_weight / 50 // mass
             );
 
             death_box.position.x = drone_body.position.x - drone_width / 2;
-            death_box.position.y = drone_body.position.y + 0.05;
+            death_box.position.y = drone_body.position.y + drone_height;
             death_box.position.z = drone_body.position.z - drone_width / 2;
 
             death_box.setCcdMotionThreshold(drone_height / 2);
+            death_box.setCcdSweptSphereRadius(drone_height / 2);
 
             scene.add(death_box);
         } else if (event.keyCode == 32) {
