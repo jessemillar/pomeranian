@@ -81,5 +81,5 @@ var hover = function() {
     motor_thrust[2].force = gravity_strength / 4 * motor_level;
     motor_thrust[3].force = gravity_strength / 4 * motor_level;
 
-    motor_impulse();
+    impulse_motors();
 };

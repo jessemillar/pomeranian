@@ -10,7 +10,7 @@ var get_tilt = function() {
     return tilt;
 };
 
-var motor_impulse = function() {
+var impulse_motors = function() {
     motor_thrust[0].angle = new THREE.Vector3(0, motor_thrust[0].force, 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
     drone_body.applyForce(motor_thrust[0].angle, new THREE.Vector3(-drone_depth, 0, -drone_width));
 
