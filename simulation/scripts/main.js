@@ -35,17 +35,17 @@ var scale = 10,
 document.addEventListener(
     'keydown',
     function(event) {
-        if (event.keyCode == 13) {
+        if (event.keyCode == 13) { // Use this mostly when you're hovering in a stable state
             console.log("Adding death box");
 
             var death_box = new Physijs.BoxMesh(
                 new THREE.BoxGeometry(drone_height, drone_height, drone_height),
                 ground_material,
-                drone_weight / 50 // mass
+                drone_weight / 1000
             );
 
             death_box.position.x = drone_body.position.x - drone_width / 2;
-            death_box.position.y = drone_body.position.y + drone_height;
+            death_box.position.y = drone_body.position.y + drone_height * 3;
             death_box.position.z = drone_body.position.z - drone_width / 2;
 
             death_box.setCcdMotionThreshold(drone_height / 2);
