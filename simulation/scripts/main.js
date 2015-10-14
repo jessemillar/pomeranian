@@ -13,8 +13,22 @@ var drone_depth = 0.02,
     camera_distance = 0.25,
     floor_size = 5,
     motor_power = true,
-    motor_level = 20, // Modifier of gravity
-    motor_increment = 0.05;
+    motor_level = 0.2, // Modifier of gravity
+    motor_increment = 0.005,
+    motor_thrust = [{ // angle is for auto computation in api.js
+        force: 0,
+        angle: 0
+    }, {
+        force: 0,
+        angle: 0
+    }, {
+        force: 0,
+        angle: 0
+    }, {
+        force: 0,
+        angle: 0
+    }],
+    debug = true;
 
 document.addEventListener( // For development purposes only
     'keydown',
@@ -40,10 +54,10 @@ document.addEventListener( // For development purposes only
             motor_power = !motor_power;
             console.log("Toggling motors");
         } else if (event.keyCode == 38) {
-            motor_level -= motor_increment;
+            motor_level += motor_increment;
             console.log("Increasing motor power");
         } else if (event.keyCode == 40) {
-            motor_level += motor_increment;
+            motor_level -= motor_increment;
             console.log("Decreasing motor power");
         }
     }
@@ -60,10 +74,12 @@ var main = function() {
 };
 
 var hover = function() {
-    var force = gravity_strength / motor_level;
+    // motor_thrust[0].force = gravity_strength / 4 * motor_level;
+    motor_thrust[0].force = 0;
+    motor_thrust[2].force = gravity_strength / 4 * motor_level;
+    // motor_thrust[2].force = gravity_strength / 4 * motor_level;
+    motor_thrust[1].force = 0;
+    motor_thrust[3].force = gravity_strength / 4 * motor_level;
 
-    motor_impulse(1, force);
-    motor_impulse(2, force);
-    motor_impulse(3, force);
-    motor_impulse(4, force);
+    motor_impulse();
 };

@@ -1,6 +1,8 @@
 Physijs.scripts.worker = 'scripts/dependencies/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
 
+var debug_arrow_fr, debug_arrow_fl, debug_arrow_bl, debug_arrow_br; // Make these global because ghetto
+
 init = function() {
     projector = new THREE.Projector;
 
@@ -28,6 +30,7 @@ init = function() {
         function() {
             main();
             scene.simulate(undefined, 1);
+            update_helper_arrows();
             physics_stats.update();
         }
     );
@@ -36,7 +39,7 @@ init = function() {
         35, // Field of view
         window.innerWidth / window.innerHeight, // Aspect ratio
         0.1, // Near field
-        100 // Far field
+        500 // Far field
     );
 
     scene.add(camera);
@@ -109,6 +112,12 @@ init = function() {
     motor_fr.position.set(-drone_depth, 0, -drone_width);
     drone_body.add(motor_fr);
 
+    if (debug) {
+        debug_arrow_fr = new THREE.ArrowHelper(1, new THREE.Vector3(drone_body.position.x - drone_depth, drone_body.position.y, drone_body.position.z - drone_width), 1, 0xbada55);
+
+        scene.add(debug_arrow_fr);
+    }
+
     motor_fl = new Physijs.CylinderMesh(
         motor_geometry,
         front_motor_material,
@@ -117,6 +126,12 @@ init = function() {
 
     motor_fl.position.set(-drone_depth, 0, drone_width);
     drone_body.add(motor_fl);
+
+    if (debug) {
+        debug_arrow_fl = new THREE.ArrowHelper(1, new THREE.Vector3(drone_body.position.x - drone_depth, drone_body.position.y, drone_body.position.z - drone_width), 1, 0xbada55);
+
+        scene.add(debug_arrow_fl);
+    }
 
     motor_bl = new Physijs.CylinderMesh(
         motor_geometry,
@@ -127,6 +142,12 @@ init = function() {
     motor_bl.position.set(drone_depth, 0, drone_width);
     drone_body.add(motor_bl);
 
+    if (debug) {
+        debug_arrow_bl = new THREE.ArrowHelper(1, new THREE.Vector3(drone_body.position.x - drone_depth, drone_body.position.y, drone_body.position.z - drone_width), 1, 0xbada55);
+
+        scene.add(debug_arrow_bl);
+    }
+
     motor_br = new Physijs.CylinderMesh(
         motor_geometry,
         back_motor_material,
@@ -135,6 +156,12 @@ init = function() {
 
     motor_br.position.set(drone_depth, 0, -drone_width);
     drone_body.add(motor_br);
+
+    if (debug) {
+        debug_arrow_br = new THREE.ArrowHelper(1, new THREE.Vector3(drone_body.position.x - drone_depth, drone_body.position.y, drone_body.position.z - drone_width), 1, 0xbada55);
+
+        scene.add(debug_arrow_br);
+    }
 
     scene.add(drone_body);
 
