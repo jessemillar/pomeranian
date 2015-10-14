@@ -40,7 +40,7 @@ var safetySwitch = function() {
     var rotation = getTilt();
 
     if (motor_power && Math.round(Math.abs(rotation.x)) == 180 || Math.round(Math.abs(rotation.z)) == 180) { // Turn off the motors if we turn upside down
-        console.log("Killing the power");
+        console.log("Killing the motors for safety");
         motor_power = false;
     }
 };
@@ -58,7 +58,7 @@ var helperArrows = function() {
             temp_position.setFromMatrixPosition(drone_body.children[0].matrixWorld);
 
             debug_arrow_fr.setDirection(motor_thrust[0].angle.normalize().negate());
-            debug_arrow_fr.setLength(motor_thrust[0].force, drone_height / 2, drone_height / 2);
+            debug_arrow_fr.setLength(motor_thrust[0].force * helper_arrow_scale, drone_height / 2, drone_height / 2);
 
             debug_arrow_fr.position.x = temp_position.x;
             debug_arrow_fr.position.y = temp_position.y;
@@ -77,7 +77,7 @@ var helperArrows = function() {
             debug_arrow_fl.position.y = temp_position.y;
             debug_arrow_fl.position.z = temp_position.z;
             debug_arrow_fl.setDirection(motor_thrust[1].angle.normalize().negate());
-            debug_arrow_fl.setLength(motor_thrust[1].force, drone_height / 2, drone_height / 2);
+            debug_arrow_fl.setLength(motor_thrust[1].force * helper_arrow_scale, drone_height / 2, drone_height / 2);
         } else {
             debug_arrow_fl.visible = false;
         }
@@ -92,7 +92,7 @@ var helperArrows = function() {
             debug_arrow_bl.position.y = temp_position.y;
             debug_arrow_bl.position.z = temp_position.z;
             debug_arrow_bl.setDirection(motor_thrust[2].angle.normalize().negate());
-            debug_arrow_bl.setLength(motor_thrust[2].force, drone_height / 2, drone_height / 2);
+            debug_arrow_bl.setLength(motor_thrust[2].force * helper_arrow_scale, drone_height / 2, drone_height / 2);
         } else {
             debug_arrow_bl.visible = false;
         }
@@ -107,7 +107,7 @@ var helperArrows = function() {
             debug_arrow_br.position.y = temp_position.y;
             debug_arrow_br.position.z = temp_position.z;
             debug_arrow_br.setDirection(motor_thrust[3].angle.normalize().negate());
-            debug_arrow_br.setLength(motor_thrust[3].force, drone_height / 2, drone_height / 2);
+            debug_arrow_br.setLength(motor_thrust[3].force * helper_arrow_scale, drone_height / 2, drone_height / 2);
         } else {
             debug_arrow_br.visible = false;
         }
@@ -119,6 +119,6 @@ var helperArrows = function() {
         debug_arrow_gravity.position.y = temp_position.y;
         debug_arrow_gravity.position.z = temp_position.z;
         debug_arrow_gravity.setDirection(new THREE.Vector3(0, 1, 0).normalize().negate());
-        debug_arrow_gravity.setLength(gravity_strength / 4, drone_height / 2, drone_height / 2);
+        debug_arrow_gravity.setLength(gravity_strength / 4 * helper_arrow_scale, drone_height / 2, drone_height / 2);
     }
 };

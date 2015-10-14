@@ -54,11 +54,11 @@ init = function() {
 
     // Ground
     ground = new Physijs.BoxMesh(
-        new THREE.BoxGeometry(floor_size, 0.25, floor_size), // Get as close to a plane as possible
+        new THREE.BoxGeometry(floor_size, floor_thickness, floor_size), // Get as close to a plane as possible
         ground_material,
         0 // mass
     );
-    ground.position.y = -0.25 / 2;
+    ground.position.y = -floor_thickness / 2;
     scene.add(ground);
 
     // Drone
