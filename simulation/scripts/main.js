@@ -81,14 +81,42 @@ document.addEventListener(
 );
 
 var main = function() {
-    console.log(getPosition(), getTilt());
+    // console.log(getPosition(), getTilt());
 
     if (motor_power) {
+        stabilize();
         impulseMotors();
     }
 
     safetySwitch();
     helperArrows();
+};
+
+var ctr = new Controller(0.25, 0.01, 0.01, 1); // k_p, k_i, k_d, dt
+ctr.setTarget(0); // Ideal tilt on horizontal axes
+
+var stabilize = function() {
+    var x_correction = ctr.update(getTilt().x);
+    console.log("x: ", getTilt().x, x_correction);
+
+    var x_correction_force = Math.tan(x_correction * Math.PI / 180) * (drone_width / 2);
+
+    if (getTilt().x < 0) { // Lilting to port
+        motor_thrust[1].force += x_correction_force / 2;
+        motor_thrust[2].force += x_correction_force / 2;
+
+        motor_thrust[0].force -= x_correction_force / 2;
+        motor_thrust[3].force -= x_correction_force / 2;
+    } else { // Lilting to starboard
+        motor_thrust[0].force += x_correction_force / 2;
+        motor_thrust[3].force += x_correction_force / 2;
+
+        motor_thrust[1].force -= x_correction_force / 2;
+        motor_thrust[2].force -= x_correction_force / 2;
+    }
+
+    // var z_correction = ctr.update(getTilt().z);
+    // console.log("z: ", getTilt().x, z_correction);
 };
 
 var forwardImpulse = function() {
