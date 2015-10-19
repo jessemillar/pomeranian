@@ -74,9 +74,9 @@ zPid.setSetpoint(0);
 var main = function() {
     // console.log("Throttle: " + throttle, pid.update(getTilt().x), getPosition(), getTilt());
     if (power) {
-        console.log(pid.update(getTilt().x).toFixed(5), roll_offset.toFixed(5));
+        var roll = xPid.update(getTilt().x);
 
-        var roll = pid.update(getTilt().x);
+        console.log(roll.toFixed(5), roll_offset.toFixed(5));
 
         if (roll > 0) {
             roll_offset -= roll;
