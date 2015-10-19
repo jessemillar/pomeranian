@@ -80,7 +80,7 @@ init = function() {
         0
     );
 
-    back_motor_material = Physijs.createMaterial(
+    motor_material = Physijs.createMaterial(
         new THREE.MeshBasicMaterial({
             color: 0xffdc00,
             wireframe: true
@@ -134,7 +134,7 @@ init = function() {
 
     motor_bl = new Physijs.CylinderMesh(
         motor_geometry,
-        back_motor_material,
+        motor_material,
         drone_motor_weight
     );
 
@@ -149,7 +149,7 @@ init = function() {
 
     motor_br = new Physijs.CylinderMesh(
         motor_geometry,
-        back_motor_material,
+        motor_material,
         drone_motor_weight
     );
 

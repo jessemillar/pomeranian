@@ -1,6 +1,6 @@
 // Measurement values are in SI units; EG: kg, meters, and seconds
 
-var scale = 10,
+var scale = 10, // So that the physics engine works properly
     drone_depth = 0.02 * scale,
     drone_height = 0.01 * scale,
     drone_width = 0.02 * scale,
@@ -13,25 +13,16 @@ var scale = 10,
     camera_distance = 1 * scale,
     floor_size = 5 * scale,
     floor_thickness = 0.5 * scale,
-    motor_power = true,
-    motor_level = 2, // Modifier of gravity
-    motor_increment = 0.0005 * scale,
-    initial_thrust = gravity_strength / 4 * motor_level,
-    motor_thrust = [{ // angle gets automatically computed in api.js
-        force: initial_thrust,
-        angle: 0
-    }, {
-        force: initial_thrust,
-        angle: 0
-    }, {
-        force: initial_thrust,
-        angle: 0
-    }, {
-        force: initial_thrust,
-        angle: 0
-    }],
+    power = true,
+    throttle = 4.8 * scale,
+    motor_increment = 0.005 * scale,
+    pitch_offset = 0,
+    roll_offset = 0,
+    yaw_offset = 0,
+    motor_power = [0, 0, 0, 0],
+    motor_angle = [0, 0, 0, 0], // Made global for helper arrows
     debug = true,
-    helper_arrow_scale = 0.1;
+    helper_arrow_scale = 0.03;
 
 document.addEventListener(
     'keydown',
@@ -54,87 +45,53 @@ document.addEventListener(
 
             scene.add(death_box);
         } else if (event.keyCode == 32) { // Spacebar
-            motor_power = !motor_power;
-            console.log("Toggling motors");
+            power = !power;
+            // console.log("Toggling motors");
         } else if (event.keyCode == 38) { // Up arrow
-            motor_thrust[0].force += motor_increment;
-            motor_thrust[1].force += motor_increment;
-            motor_thrust[2].force += motor_increment;
-            motor_thrust[3].force += motor_increment;
-            console.log("Increasing motor power");
+            throttle += motor_increment;
+            // console.log("Increasing motor power");
         } else if (event.keyCode == 40) { // Down arrow
-            motor_thrust[0].force -= motor_increment;
-            motor_thrust[1].force -= motor_increment;
-            motor_thrust[2].force -= motor_increment;
-            motor_thrust[3].force -= motor_increment;
-            console.log("Decreasing motor power");
+            throttle -= motor_increment;
+            // console.log("Decreasing motor power");
         } else if (event.keyCode == 65) { // "A" key
-            portImpulse();
+            roll_offset -= motor_increment / 2;
         } else if (event.keyCode == 68) { // "D" key
-            starboardImpulse();
+            roll_offset += motor_increment / 2;
         } else if (event.keyCode == 83) { // "S" key
-            backwardImpulse();
+            pitch_offset += motor_increment / 2;
         } else if (event.keyCode == 87) { // "W" key
-            forwardImpulse();
+            pitch_offset -= motor_increment / 2;
         }
     }
 );
 
-var main = function() {
-    // console.log(getPosition(), getTilt());
+var xPid = new PID(0.00001, 0, 0, 1);
+xPid.setSetpoint(0);
 
-    if (motor_power) {
-        stabilize();
+var zPid = new PID(0.00001, 0, 0, 1);
+zPid.setSetpoint(0);
+
+var main = function() {
+    // console.log("Throttle: " + throttle, pid.update(getTilt().x), getPosition(), getTilt());
+    if (power) {
+        console.log(pid.update(getTilt().x).toFixed(5), roll_offset.toFixed(5));
+
+        var roll = pid.update(getTilt().x);
+
+        if (roll > 0) {
+            roll_offset -= roll;
+        } else if (roll < 0) {
+            roll_offset += roll;
+        }
+
+        motor_power[0] = throttle - roll_offset / 2 + pitch_offset / 2;
+        motor_power[1] = throttle + roll_offset / 2 + pitch_offset / 2;
+        motor_power[2] = throttle + roll_offset / 2 - pitch_offset / 2;
+        motor_power[3] = throttle - roll_offset / 2 - pitch_offset / 2;
+
         impulseMotors();
     }
 
-    safetySwitch();
-    helperArrows();
-};
-
-var ctr = new Controller(0.25, 0.01, 0.01, 1); // k_p, k_i, k_d, dt
-ctr.setTarget(0); // Ideal tilt on horizontal axes
-
-var stabilize = function() {
-    var x_correction = ctr.update(getTilt().x);
-    console.log("x: ", getTilt().x, x_correction);
-
-    var x_correction_force = Math.tan(x_correction * Math.PI / 180) * (drone_width / 2);
-
-    if (getTilt().x < 0) { // Lilting to port
-        motor_thrust[1].force += x_correction_force / 2;
-        motor_thrust[2].force += x_correction_force / 2;
-
-        motor_thrust[0].force -= x_correction_force / 2;
-        motor_thrust[3].force -= x_correction_force / 2;
-    } else { // Lilting to starboard
-        motor_thrust[0].force += x_correction_force / 2;
-        motor_thrust[3].force += x_correction_force / 2;
-
-        motor_thrust[1].force -= x_correction_force / 2;
-        motor_thrust[2].force -= x_correction_force / 2;
-    }
-
-    // var z_correction = ctr.update(getTilt().z);
-    // console.log("z: ", getTilt().x, z_correction);
-};
-
-var forwardImpulse = function() {
-    motor_thrust[2].force += motor_increment;
-    motor_thrust[3].force += motor_increment;
-};
-
-var backwardImpulse = function() {
-    motor_thrust[0].force += motor_increment;
-    motor_thrust[1].force += motor_increment;
-};
-
-var portImpulse = function() {
-    motor_thrust[0].force += motor_increment;
-    motor_thrust[3].force += motor_increment;
-};
-
-var starboardImpulse = function() {
-    motor_thrust[1].force += motor_increment;
-    motor_thrust[2].force += motor_increment;
+    // safetySwitch();
+    helperArrows(); // Update the helper arrows (for debugging purposes)
 };
