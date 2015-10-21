@@ -1,131 +1,52 @@
-var PID = function(kp, ki, kd, direction) {
-    // Constructor functionality at bottom of file
+var PID = function(k_p, k_i, k_d, dt) {
+    // PID constants
+    this.k_p = (typeof k_p === 'number') ? k_p : 1;
+    this.k_i = k_i || 0;
+    this.k_d = k_d || 0;
 
-    this.update = function(processVariable) {
-        var now = this.millis();
-        var deltaMillis = now - this.lastTime;
+    // Interval of time between two updates
+    // If not set, it will be automatically calculated
+    this.dt = dt || 0;
 
-        if (deltaMillis >= this.sampleTime) {
-            var deltaSeconds = deltaMillis / 1000;
+    this.sumError = 0;
+    this.lastError = 0;
+    this.lastTime = 0;
 
-            // Compute the current error
-            var error = this.setPoint - processVariable;
+    this.target = 0; // default value, can be modified with .setTarget
+};
 
-            // Compute the proportional term
-            // http://en.wikipedia.org/wiki/PID_controller#Proportional_term
-            var proportionalTerm = kp * error;
+PID.prototype.setTarget = function(target) {
+    this.target = target;
+};
 
-            // Accumulate the "integral" term
-            // http://en.wikipedia.org/wiki/PID_controller#Integral_term
-            this.integralTerm += ki * deltaSeconds * error;
+PID.prototype.update = function(currentValue) {
+    this.currentValue = currentValue;
 
-            // Ensure "integral" term is within output range to aintegral windup:
-            // http://en.wikipedia.org/wiki/PID_controller#Integral_windup
-            if (this.integralTerm > this.outMax) {
-                this.integralTerm = this.outMax;
-            } else if (this.integralTerm < this.outMin) {
-                this.integralTerm = this.outMin;
-            }
-
-            // Compute the derivative term
-            // http://en.wikipedia.org/wiki/PID_controller#Derivative_term
-
-            // Use the process variable derivative here instead of error derivative.
-            // This avoids excessive output movement when the setpoint changes:
-            // http://en.wikipedia.org/wiki/PID_controller#Set_Point_step_change
-            var derivativeTerm = -1 * kd * (processVariable - this.lastProcessVariable) / deltaSeconds;
-
-            // Compute PID output
-            var output = proportionalTerm + this.integralTerm + derivativeTerm;
-
-            // Ensure output is within output range
-            if (output > this.outMax) {
-                output = this.outMax;
-            } else if (output < this.outMin) {
-                output = this.outMin;
-            }
-
-            // Remember working variables
-            this.lastProcessVariable = processVariable;
-            lastError = error;
-            this.lastTime = now;
+    // Calculate dt
+    var dt = this.dt;
+    if (!dt) {
+        var currentTime = Date.now();
+        if (this.lastTime === 0) { // First time update() is called
+            dt = 0;
+        } else {
+            dt = (currentTime - this.lastTime) / 1000; // in seconds
         }
+        this.lastTime = currentTime;
+    }
+    if (typeof dt !== 'number' || dt === 0) {
+        dt = 1;
+    }
 
-        return output;
-    };
+    var error = (this.target - this.currentValue);
+    this.sumError = this.sumError + error * dt;
+    var dError = (error - this.lastError) / dt;
+    this.lastError = error;
 
-    this.setSetpoint = function(setPoint) {
-        this.setPoint = setPoint;
-    };
+    return (this.k_p * error) + (this.k_i * this.sumError) + (this.k_d * dError);
+};
 
-    this.setTunings = function(kp, ki, kd) {
-        // Don't allow negative tunings
-        if (kp < 0 || ki < 0 || kd < 0) {
-            return;
-        }
-
-        // // Reverse PID factors if required
-        // if (direction == PID_DIRECTION_REVERSE) {
-        //     kp = 0 - kp;
-        //     ki = 0 - ki;
-        //     kd = 0 - kd;
-        // }
-
-        // Store new tunings
-        this.kp = kp;
-        this.ki = ki;
-        this.kd = kd;
-    };
-
-    this.setDirection = function(direction) {
-        // Adjust PID factors if direction has changed
-        if (direction != this.direction) {
-            kp = 0 - kp;
-            ki = 0 - ki;
-            kd = 0 - kd;
-        }
-
-        // Store new direction
-        this.direction = direction;
-    };
-
-    this.setSampleTime = function(sampleTime) {
-        if (sampleTime <= 0) {
-            return;
-        }
-
-        // Store new sample time
-        this.sampleTime = sampleTime;
-    };
-
-    this.setOutputLimits = function(outMin, outMax) {
-        if (this.outMin >= this.outMax) {
-            return;
-        }
-
-        // Ensure "integral" term is within output range to aintegral windup:
-        // http://en.wikipedia.org/wiki/PID_controller#Integral_windup
-        if (this.integralTerm > this.outMax) {
-            this.integralTerm = this.outMax;
-        } else if (this.integralTerm < this.outMin) {
-            this.integralTerm = this.outMin;
-        }
-
-        // Store new output limits
-        this.outMin = outMin;
-        this.outMax = outMax;
-    };
-
-    this.millis = function() {
-        return new Date().getTime();
-    };
-
-    // Constructor functionality
-    this.setTunings(kp, ki, kd);
-    this.setDirection(direction);
-    this.integralTerm = 0;
-    this.lastProcessVariable = 0;
-
-    this.sampleTime = 1;
-    this.lastTime = this.millis() - this.sampleTime;
+PID.prototype.reset = function() {
+    this.sumError = 0;
+    this.lastError = 0;
+    this.lastTime = 0;
 };

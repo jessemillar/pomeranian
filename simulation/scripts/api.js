@@ -1,5 +1,5 @@
 var getTilt = function() {
-    var decimal_places = 3;
+    var decimal_places = 5;
 
     var tilt = {
         x: (drone_body.rotation.x * (180 / Math.PI)).toFixed(decimal_places),
@@ -11,7 +11,7 @@ var getTilt = function() {
 };
 
 var getPosition = function() {
-    var decimal_places = 3;
+    var decimal_places = 5;
 
     var tilt = {
         x: (drone_body.position.x).toFixed(decimal_places),

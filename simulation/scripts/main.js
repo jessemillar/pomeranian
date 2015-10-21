@@ -14,7 +14,7 @@ var scale = 10, // So that the physics engine works properly
     floor_size = 5 * scale,
     floor_thickness = 0.5 * scale,
     power = true,
-    throttle = 4.8 * scale,
+    throttle = 4.95 * scale,
     motor_increment = 0.005 * scale,
     pitch_offset = 0,
     roll_offset = 0,
@@ -65,24 +65,19 @@ document.addEventListener(
     }
 );
 
-var xPid = new PID(0.00001, 0, 0, 1);
-xPid.setSetpoint(0);
-
-var zPid = new PID(0.00001, 0, 0, 1);
-zPid.setSetpoint(0);
+var p = 3;
+var i = 0;
+var d = 0.1;
+var rollPid = new PID(p, i, d);
+var pitchPid = new PID(p, i, d);
 
 var main = function() {
-    // console.log("Throttle: " + throttle, pid.update(getTilt().x), getPosition(), getTilt());
     if (power) {
-        var roll = xPid.update(getTilt().x);
+        var roll = -rollPid.update(getTilt().x);
+        var pitch = -pitchPid.update(getTilt().z);
 
-        console.log(roll.toFixed(5), roll_offset.toFixed(5));
-
-        if (roll > 0) {
-            roll_offset -= roll;
-        } else if (roll < 0) {
-            roll_offset += roll;
-        }
+        roll_offset = roll;
+        pitch_offset = pitch;
 
         motor_power[0] = throttle - roll_offset / 2 + pitch_offset / 2;
         motor_power[1] = throttle + roll_offset / 2 + pitch_offset / 2;
