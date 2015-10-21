@@ -14,12 +14,14 @@ var scale = 10, // So that the physics engine works properly
     floor_size = 5 * scale,
     floor_thickness = 0.5 * scale,
     power = true,
-    throttle = 4.95 * scale,
+    throttle = 4.915 * scale,
     motor_increment = 0.01 * scale,
     control_increment = 1 * scale,
     pitch_offset = 0,
     roll_offset = 0,
     yaw_offset = 0,
+    motor_max = 10 * scale,
+    motor_min = 0,
     motor_power = [0, 0, 0, 0],
     motor_angle = [0, 0, 0, 0], // Made global for helper arrows
     roll_control = 0,
@@ -31,22 +33,20 @@ document.addEventListener(
     'keydown',
     function(event) {
         if (event.keyCode == 13) { // "Enter" key
-            console.log("Adding death box"); // Use this mostly when you're hovering in a stable state
-
-            var death_box = new Physijs.BoxMesh(
-                new THREE.BoxGeometry(drone_height, drone_height, drone_height),
+            var death_ball = new Physijs.SphereMesh(
+                new THREE.SphereGeometry(drone_width * 1.5, 8, 8),
                 ground_material,
                 drone_weight / 1000
             );
 
-            death_box.position.x = drone_body.position.x - drone_width / 2;
-            death_box.position.y = drone_body.position.y + drone_height * 3;
-            death_box.position.z = drone_body.position.z - drone_width / 2;
+            death_ball.position.x = drone_body.position.x + drone_width / 2;
+            death_ball.position.y = drone_body.position.y + drone_height * 10;
+            death_ball.position.z = drone_body.position.z + drone_width / 2;
 
-            death_box.setCcdMotionThreshold(drone_height / 2);
-            death_box.setCcdSweptSphereRadius(drone_height / 2);
+            death_ball.setCcdMotionThreshold(drone_height / 2);
+            death_ball.setCcdSweptSphereRadius(drone_height / 2);
 
-            scene.add(death_box);
+            scene.add(death_ball);
         } else if (event.keyCode == 32) { // Spacebar
             power = !power;
             // console.log("Toggling motors");
@@ -68,7 +68,7 @@ document.addEventListener(
     }
 );
 
-document.addEventListener(
+document.addEventListener( // Kill user controls if we're not hitting a key
     'keyup',
     function(event) {
         if (event.keyCode == 65) { // "A" key
@@ -85,7 +85,7 @@ document.addEventListener(
 
 var p = 3;
 var i = 0;
-var d = 0.1;
+var d = 0.15;
 var rollPid = new PID(p, i, d);
 var pitchPid = new PID(p, i, d);
 
@@ -101,6 +101,14 @@ var main = function() {
         motor_power[1] = throttle + roll_offset / 2 + pitch_offset / 2;
         motor_power[2] = throttle + roll_offset / 2 - pitch_offset / 2;
         motor_power[3] = throttle - roll_offset / 2 - pitch_offset / 2;
+
+        for (var i = 0; i < motor_power.length; i++) { // Keep motors within bounds
+            if (motor_power[i] < motor_min) {
+                motor_power[i] = motor_min;
+            } else if (motor_power[i] > motor_max) {
+                motor_power[i] = motor_max;
+            }
+        }
 
         impulseMotors();
     }

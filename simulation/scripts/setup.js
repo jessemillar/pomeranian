@@ -8,6 +8,7 @@ init = function() {
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMapEnabled = true;
     document.getElementById('viewport').appendChild(renderer.domElement);
 
     render_stats = new Stats();
@@ -43,47 +44,65 @@ init = function() {
 
     scene.add(camera);
 
-    ground_material = Physijs.createMaterial(
-        new THREE.MeshBasicMaterial({
-            color: 0x7fdbff,
-            wireframe: true
-        }),
-        1,
-        0
-    );
+    // Light
+    var spotLight = new THREE.SpotLight(0xffffff);
+    spotLight.position.set(0, 15 * scale, 0);
+    spotLight.castShadow = true;
+    spotLight.shadowMapWidth = 2048;
+    spotLight.shadowMapHeight = 2048;
+    spotLight.shadowCameraNear = 0.1;
+    // spotLight.shadowCameraFar = 5000;
+    spotLight.shadowCameraFov = 30;
+    // spotLight.shadowCameraVisible = true;
+    scene.add(spotLight);
+
+    var ground_texture = new THREE.ImageUtils.loadTexture("images/checkerboard.png");
+    ground_texture.wrapS = ground_texture.wrapT = THREE.RepeatWrapping;
+    ground_texture.repeat.set(10, 10);
+    var ground_material = new THREE.MeshBasicMaterial({
+        map: ground_texture,
+        side: THREE.DoubleSide
+    });
 
     // Ground
     ground = new Physijs.BoxMesh(
         new THREE.BoxGeometry(floor_size, floor_thickness, floor_size), // Get as close to a plane as possible
         ground_material,
-        0 // mass
+        0 // Mass
     );
     ground.position.y = -floor_thickness / 2;
+    ground.receiveShadow = true;
     scene.add(ground);
+
+    // Wall obstacle
+    // wall = new Physijs.BoxMesh(
+    //     new THREE.BoxGeometry(floor_size, floor_thickness, floor_size), // Get as close to a plane as possible
+    //     ground_material,
+    //     100 // Mass
+    // );
+    // wall.position.y = -floor_thickness / 2;
+    // scene.add(wall);
 
     // Drone
     drone_material = Physijs.createMaterial(
-        new THREE.MeshBasicMaterial({
-            color: 0x0074d9,
-            wireframe: true
+        new THREE.MeshLambertMaterial({
+            color: 0x0074d9
         }),
         0.75,
         0
     );
 
     front_motor_material = Physijs.createMaterial(
-        new THREE.MeshBasicMaterial({
-            color: 0xff0000,
-            wireframe: true
+        new THREE.MeshLambertMaterial({
+            color: 0xff0000
         }),
         0.75,
         0
     );
 
     motor_material = Physijs.createMaterial(
-        new THREE.MeshBasicMaterial({
-            color: 0xffdc00,
-            wireframe: true
+        new THREE.MeshLambertMaterial({
+            color: 0xffdc00
         }),
         0.75,
         0
@@ -98,7 +117,7 @@ init = function() {
     );
 
     drone_body.position.y = starting_height + drone_height / 2;
-
+    drone_body.castShadow = true;
     drone_body.setCcdMotionThreshold(drone_height / 2);
     drone_body.setCcdSweptSphereRadius(drone_height / 2);
 
@@ -109,6 +128,7 @@ init = function() {
     );
 
     motor_fr.position.set(-drone_depth, 0, -drone_width);
+    motor_fr.castShadow = true;
     drone_body.add(motor_fr);
 
     if (debug) {
@@ -124,6 +144,7 @@ init = function() {
     );
 
     motor_fl.position.set(-drone_depth, 0, drone_width);
+    motor_fl.castShadow = true;
     drone_body.add(motor_fl);
 
     if (debug) {
@@ -139,6 +160,7 @@ init = function() {
     );
 
     motor_bl.position.set(drone_depth, 0, drone_width);
+    motor_bl.castShadow = true;
     drone_body.add(motor_bl);
 
     if (debug) {
@@ -154,6 +176,7 @@ init = function() {
     );
 
     motor_br.position.set(drone_depth, 0, -drone_width);
+    motor_br.castShadow = true;
     drone_body.add(motor_br);
 
     if (debug) {
