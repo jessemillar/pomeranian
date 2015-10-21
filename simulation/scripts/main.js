@@ -15,12 +15,15 @@ var scale = 10, // So that the physics engine works properly
     floor_thickness = 0.5 * scale,
     power = true,
     throttle = 4.95 * scale,
-    motor_increment = 0.005 * scale,
+    motor_increment = 0.01 * scale,
+    control_increment = 1 * scale,
     pitch_offset = 0,
     roll_offset = 0,
     yaw_offset = 0,
     motor_power = [0, 0, 0, 0],
     motor_angle = [0, 0, 0, 0], // Made global for helper arrows
+    roll_control = 0,
+    pitch_control = 0,
     debug = true,
     helper_arrow_scale = 0.03;
 
@@ -54,13 +57,28 @@ document.addEventListener(
             throttle -= motor_increment;
             // console.log("Decreasing motor power");
         } else if (event.keyCode == 65) { // "A" key
-            roll_offset -= motor_increment / 2;
+            roll_control = -control_increment;
         } else if (event.keyCode == 68) { // "D" key
-            roll_offset += motor_increment / 2;
+            roll_control = control_increment;
         } else if (event.keyCode == 83) { // "S" key
-            pitch_offset += motor_increment / 2;
+            pitch_control = control_increment;
         } else if (event.keyCode == 87) { // "W" key
-            pitch_offset -= motor_increment / 2;
+            pitch_control = -control_increment;
+        }
+    }
+);
+
+document.addEventListener(
+    'keyup',
+    function(event) {
+        if (event.keyCode == 65) { // "A" key
+            roll_control = 0;
+        } else if (event.keyCode == 68) { // "D" key
+            roll_control = 0;
+        } else if (event.keyCode == 83) { // "S" key
+            pitch_control = 0;
+        } else if (event.keyCode == 87) { // "W" key
+            pitch_control = 0;
         }
     }
 );
@@ -76,8 +94,8 @@ var main = function() {
         var roll = -rollPid.update(getTilt().x);
         var pitch = -pitchPid.update(getTilt().z);
 
-        roll_offset = roll;
-        pitch_offset = pitch;
+        roll_offset = roll + roll_control;
+        pitch_offset = pitch + pitch_control;
 
         motor_power[0] = throttle - roll_offset / 2 + pitch_offset / 2;
         motor_power[1] = throttle + roll_offset / 2 + pitch_offset / 2;
@@ -87,6 +105,6 @@ var main = function() {
         impulseMotors();
     }
 
-    // safetySwitch();
+    safetySwitch();
     helperArrows(); // Update the helper arrows (for debugging purposes)
 };
