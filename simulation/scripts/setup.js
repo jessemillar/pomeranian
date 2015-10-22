@@ -10,6 +10,7 @@ init = function() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
+    renderer.setClearColor(0xcad0fe, 1);
     document.getElementById('viewport').appendChild(renderer.domElement);
 
     render_stats = new Stats();
@@ -45,7 +46,7 @@ init = function() {
     scene.add(camera);
 
     // Ambient light
-    var light = new THREE.AmbientLight(0x404040); // soft white light
+    var light = new THREE.AmbientLight(0xd6d6d6); // soft white light
     scene.add(light);
 
     // Light
@@ -191,7 +192,7 @@ init = function() {
     fpvCamera = new THREE.PerspectiveCamera(
         60, // Field of view
         window.innerWidth / window.innerHeight, // Aspect ratio
-        0.1, // Near field
+        0.001, // Near field
         500 // Far field
     );
     fpvCamera.position.x = -drone_width / 2;
@@ -203,8 +204,10 @@ init = function() {
 
     if (debug) {
         debug_arrow_gravity = new THREE.ArrowHelper(1, new THREE.Vector3(drone_body.position.x, drone_body.position.y, drone_body.position.z), 1, 0xff0000);
-
         scene.add(debug_arrow_gravity);
+
+        var axes = new THREE.AxisHelper(100);
+        scene.add(axes);
     }
 
     camera.addTarget({
