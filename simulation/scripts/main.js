@@ -43,6 +43,8 @@ document.addEventListener(
             death_ball.position.y = drone_body.position.y + drone_height * 10;
             death_ball.position.z = drone_body.position.z + drone_width / 2;
 
+            death_ball.castShadow = true;
+
             death_ball.setCcdMotionThreshold(drone_height / 2);
             death_ball.setCcdSweptSphereRadius(drone_height / 2);
 
