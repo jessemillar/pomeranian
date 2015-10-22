@@ -1,33 +1,33 @@
 // Measurement values are in SI units; EG: kg, meters, and seconds
 
 var scale = 10, // So that the physics engine works properly
-    drone_depth = 0.02 * scale,
-    drone_height = 0.01 * scale,
-    drone_width = 0.02 * scale,
-    motor_diameter = 0.008 * scale,
-    starting_height = 0 * scale,
-    drone_body_weight = 0.2 * scale,
-    drone_motor_weight = 0.1 * scale,
-    drone_weight = (drone_body_weight + drone_motor_weight * 4) * scale,
-    gravity_strength = 9.8 * scale,
-    camera_distance = 0.5 * scale,
-    floor_size = 5 * scale,
-    floor_thickness = 0.5 * scale,
+    droneDepth = 0.02 * scale,
+    droneHeight = 0.01 * scale,
+    droneWidth = 0.02 * scale,
+    motorDiameter = 0.008 * scale,
+    startingHeight = 0 * scale,
+    droneBodyWeight = 0.2 * scale,
+    droneMotorWeight = 0.1 * scale,
+    droneWeight = (droneBodyWeight + droneMotorWeight * 4) * scale,
+    gravityStrength = 9.8 * scale,
+    cameraDistance = 0.5 * scale,
+    floorSize = 5 * scale,
+    floorThickness = 0.5 * scale,
     power = true,
     throttle = 4.915 * scale,
-    motor_increment = 0.01 * scale,
-    control_increment = 1 * scale,
-    pitch_offset = 0,
-    roll_offset = 0,
-    yaw_offset = 0,
-    motor_max = 10 * scale,
-    motor_min = 0,
-    motor_power = [0, 0, 0, 0],
-    motor_angle = [0, 0, 0, 0], // Made global for helper arrows
-    roll_control = 0,
-    pitch_control = 0,
+    motorIncrement = 0.01 * scale,
+    controlIncrement = 1 * scale,
+    pitchOffset = 0,
+    rollOffset = 0,
+    yawOffset = 0,
+    motorMax = 10 * scale,
+    motorMin = 0,
+    motorPower = [0, 0, 0, 0],
+    motorAngle = [0, 0, 0, 0], // Made global for helper arrows
+    rollControl = 0,
+    pitchControl = 0,
     debug = true,
-    helper_arrow_scale = 0.03;
+    helperArrowScale = 0.03;
 
 document.addEventListener(
     'keydown',
@@ -35,39 +35,39 @@ document.addEventListener(
         if (event.keyCode == 70) { // "F" key
             fpvCameraActive = !fpvCameraActive; // Toggle FPV camera
         } else if (event.keyCode == 13) { // "Enter" key
-            var death_ball = new Physijs.SphereMesh(
-                new THREE.SphereGeometry(drone_width * 1.5, 8, 8),
-                motor_material,
-                drone_weight / 1000
+            var deathBall = new Physijs.SphereMesh(
+                new THREE.SphereGeometry(droneWidth * 1.5, 8, 8),
+                motorMaterial,
+                droneWeight / 1000
             );
 
-            death_ball.position.x = drone_body.position.x + drone_width / 2;
-            death_ball.position.y = drone_body.position.y + drone_height * 10;
-            death_ball.position.z = drone_body.position.z + drone_width / 2;
+            deathBall.position.x = droneBody.position.x + droneWidth / 2;
+            deathBall.position.y = droneBody.position.y + droneHeight * 10;
+            deathBall.position.z = droneBody.position.z + droneWidth / 2;
 
-            death_ball.castShadow = true;
+            deathBall.castShadow = true;
 
-            death_ball.setCcdMotionThreshold(drone_height / 2);
-            death_ball.setCcdSweptSphereRadius(drone_height / 2);
+            deathBall.setCcdMotionThreshold(droneHeight / 2);
+            deathBall.setCcdSweptSphereRadius(droneHeight / 2);
 
-            scene.add(death_ball);
+            scene.add(deathBall);
         } else if (event.keyCode == 32) { // Spacebar
             power = !power;
             // console.log("Toggling motors");
         } else if (event.keyCode == 38) { // Up arrow
-            throttle += motor_increment;
+            throttle += motorIncrement;
             // console.log("Increasing motor power");
         } else if (event.keyCode == 40) { // Down arrow
-            throttle -= motor_increment;
+            throttle -= motorIncrement;
             // console.log("Decreasing motor power");
         } else if (event.keyCode == 65) { // "A" key
-            roll_control = -control_increment;
+            rollControl = -controlIncrement;
         } else if (event.keyCode == 68) { // "D" key
-            roll_control = control_increment;
+            rollControl = controlIncrement;
         } else if (event.keyCode == 83) { // "S" key
-            pitch_control = control_increment;
+            pitchControl = controlIncrement;
         } else if (event.keyCode == 87) { // "W" key
-            pitch_control = -control_increment;
+            pitchControl = -controlIncrement;
         }
     }
 );
@@ -76,13 +76,13 @@ document.addEventListener( // Kill user controls if we're not hitting a key
     'keyup',
     function(event) {
         if (event.keyCode == 65) { // "A" key
-            roll_control = 0;
+            rollControl = 0;
         } else if (event.keyCode == 68) { // "D" key
-            roll_control = 0;
+            rollControl = 0;
         } else if (event.keyCode == 83) { // "S" key
-            pitch_control = 0;
+            pitchControl = 0;
         } else if (event.keyCode == 87) { // "W" key
-            pitch_control = 0;
+            pitchControl = 0;
         }
     }
 );
@@ -98,19 +98,19 @@ var main = function() {
         var roll = -rollPid.update(getTilt().x);
         var pitch = -pitchPid.update(getTilt().z);
 
-        roll_offset = roll + roll_control;
-        pitch_offset = pitch + pitch_control;
+        rollOffset = roll + rollControl;
+        pitchOffset = pitch + pitchControl;
 
-        motor_power[0] = throttle - roll_offset / 2 + pitch_offset / 2;
-        motor_power[1] = throttle + roll_offset / 2 + pitch_offset / 2;
-        motor_power[2] = throttle + roll_offset / 2 - pitch_offset / 2;
-        motor_power[3] = throttle - roll_offset / 2 - pitch_offset / 2;
+        motorPower[0] = throttle - rollOffset / 2 + pitchOffset / 2;
+        motorPower[1] = throttle + rollOffset / 2 + pitchOffset / 2;
+        motorPower[2] = throttle + rollOffset / 2 - pitchOffset / 2;
+        motorPower[3] = throttle - rollOffset / 2 - pitchOffset / 2;
 
-        for (var i = 0; i < motor_power.length; i++) { // Keep motors within bounds
-            if (motor_power[i] < motor_min) {
-                motor_power[i] = motor_min;
-            } else if (motor_power[i] > motor_max) {
-                motor_power[i] = motor_max;
+        for (var i = 0; i < motorPower.length; i++) { // Keep motors within bounds
+            if (motorPower[i] < motorMin) {
+                motorPower[i] = motorMin;
+            } else if (motorPower[i] > motorMax) {
+                motorPower[i] = motorMax;
             }
         }
 

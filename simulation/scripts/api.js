@@ -1,39 +1,39 @@
 var getTilt = function() {
-    var decimal_places = 5;
+    var decimals = 5;
 
     var tilt = {
-        x: (drone_body.rotation.x * (180 / Math.PI)).toFixed(decimal_places),
-        y: (drone_body.rotation.y * (180 / Math.PI)).toFixed(decimal_places),
-        z: (drone_body.rotation.z * (180 / Math.PI)).toFixed(decimal_places)
+        x: (droneBody.rotation.x * (180 / Math.PI)).toFixed(decimals),
+        y: (droneBody.rotation.y * (180 / Math.PI)).toFixed(decimals),
+        z: (droneBody.rotation.z * (180 / Math.PI)).toFixed(decimals)
     };
 
     return tilt;
 };
 
 var getPosition = function() {
-    var decimal_places = 5;
+    var decimals = 5;
 
     var tilt = {
-        x: (drone_body.position.x).toFixed(decimal_places),
-        y: (drone_body.position.y).toFixed(decimal_places),
-        z: (drone_body.position.z).toFixed(decimal_places)
+        x: (droneBody.position.x).toFixed(decimals),
+        y: (droneBody.position.y).toFixed(decimals),
+        z: (droneBody.position.z).toFixed(decimals)
     };
 
     return tilt;
 };
 
 var impulseMotors = function() {
-    motor_angle[0] = new THREE.Vector3(0, motor_power[0], 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
-    drone_body.applyForce(motor_angle[0], new THREE.Vector3(-drone_depth, 0, -drone_width));
+    motorAngle[0] = new THREE.Vector3(0, motorPower[0], 0).applyMatrix4(new THREE.Matrix4().extractRotation(droneBody.matrix));
+    droneBody.applyForce(motorAngle[0], new THREE.Vector3(-droneDepth, 0, -droneWidth));
 
-    motor_angle[1] = new THREE.Vector3(0, motor_power[1], 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
-    drone_body.applyForce(motor_angle[1], new THREE.Vector3(-drone_depth, 0, drone_width));
+    motorAngle[1] = new THREE.Vector3(0, motorPower[1], 0).applyMatrix4(new THREE.Matrix4().extractRotation(droneBody.matrix));
+    droneBody.applyForce(motorAngle[1], new THREE.Vector3(-droneDepth, 0, droneWidth));
 
-    motor_angle[2] = new THREE.Vector3(0, motor_power[2], 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
-    drone_body.applyForce(motor_angle[2], new THREE.Vector3(drone_depth, 0, drone_width));
+    motorAngle[2] = new THREE.Vector3(0, motorPower[2], 0).applyMatrix4(new THREE.Matrix4().extractRotation(droneBody.matrix));
+    droneBody.applyForce(motorAngle[2], new THREE.Vector3(droneDepth, 0, droneWidth));
 
-    motor_angle[3] = new THREE.Vector3(0, motor_power[3], 0).applyMatrix4(new THREE.Matrix4().extractRotation(drone_body.matrix));
-    drone_body.applyForce(motor_angle[3], new THREE.Vector3(drone_depth, 0, -drone_width));
+    motorAngle[3] = new THREE.Vector3(0, motorPower[3], 0).applyMatrix4(new THREE.Matrix4().extractRotation(droneBody.matrix));
+    droneBody.applyForce(motorAngle[3], new THREE.Vector3(droneDepth, 0, -droneWidth));
 };
 
 var safetySwitch = function() {
@@ -47,78 +47,78 @@ var safetySwitch = function() {
 
 var helperArrows = function() {
     if (debug) {
-        var temp_position;
+        var positionTemp;
 
         scene.updateMatrixWorld();
 
-        if (motor_power[0] > 0 && power) {
-            debug_arrow_fr.visible = true;
+        if (motorPower[0] > 0 && power) {
+            frDebugArrow.visible = true;
 
-            temp_position = new THREE.Vector3();
-            temp_position.setFromMatrixPosition(drone_body.children[0].matrixWorld);
+            positionTemp = new THREE.Vector3();
+            positionTemp.setFromMatrixPosition(droneBody.children[0].matrixWorld);
 
-            debug_arrow_fr.setDirection(motor_angle[0].normalize().negate());
-            debug_arrow_fr.setLength(motor_power[0] * helper_arrow_scale, drone_height / 2, drone_height / 2);
+            frDebugArrow.setDirection(motorAngle[0].normalize().negate());
+            frDebugArrow.setLength(motorPower[0] * helperArrowScale, droneHeight / 2, droneHeight / 2);
 
-            debug_arrow_fr.position.x = temp_position.x;
-            debug_arrow_fr.position.y = temp_position.y;
-            debug_arrow_fr.position.z = temp_position.z;
+            frDebugArrow.position.x = positionTemp.x;
+            frDebugArrow.position.y = positionTemp.y;
+            frDebugArrow.position.z = positionTemp.z;
         } else {
-            debug_arrow_fr.visible = false;
+            frDebugArrow.visible = false;
         }
 
-        if (motor_power[1] > 0 && power) {
-            debug_arrow_fl.visible = true;
+        if (motorPower[1] > 0 && power) {
+            flDebugArrow.visible = true;
 
-            temp_position = new THREE.Vector3();
-            temp_position.setFromMatrixPosition(drone_body.children[1].matrixWorld);
+            positionTemp = new THREE.Vector3();
+            positionTemp.setFromMatrixPosition(droneBody.children[1].matrixWorld);
 
-            debug_arrow_fl.position.x = temp_position.x;
-            debug_arrow_fl.position.y = temp_position.y;
-            debug_arrow_fl.position.z = temp_position.z;
-            debug_arrow_fl.setDirection(motor_angle[1].normalize().negate());
-            debug_arrow_fl.setLength(motor_power[1] * helper_arrow_scale, drone_height / 2, drone_height / 2);
+            flDebugArrow.position.x = positionTemp.x;
+            flDebugArrow.position.y = positionTemp.y;
+            flDebugArrow.position.z = positionTemp.z;
+            flDebugArrow.setDirection(motorAngle[1].normalize().negate());
+            flDebugArrow.setLength(motorPower[1] * helperArrowScale, droneHeight / 2, droneHeight / 2);
         } else {
-            debug_arrow_fl.visible = false;
+            flDebugArrow.visible = false;
         }
 
-        if (motor_power[2] > 0 && power) {
-            debug_arrow_bl.visible = true;
+        if (motorPower[2] > 0 && power) {
+            blDebugArrow.visible = true;
 
-            temp_position = new THREE.Vector3();
-            temp_position.setFromMatrixPosition(drone_body.children[2].matrixWorld);
+            positionTemp = new THREE.Vector3();
+            positionTemp.setFromMatrixPosition(droneBody.children[2].matrixWorld);
 
-            debug_arrow_bl.position.x = temp_position.x;
-            debug_arrow_bl.position.y = temp_position.y;
-            debug_arrow_bl.position.z = temp_position.z;
-            debug_arrow_bl.setDirection(motor_angle[2].normalize().negate());
-            debug_arrow_bl.setLength(motor_power[2] * helper_arrow_scale, drone_height / 2, drone_height / 2);
+            blDebugArrow.position.x = positionTemp.x;
+            blDebugArrow.position.y = positionTemp.y;
+            blDebugArrow.position.z = positionTemp.z;
+            blDebugArrow.setDirection(motorAngle[2].normalize().negate());
+            blDebugArrow.setLength(motorPower[2] * helperArrowScale, droneHeight / 2, droneHeight / 2);
         } else {
-            debug_arrow_bl.visible = false;
+            blDebugArrow.visible = false;
         }
 
-        if (motor_power[3] > 0 && power) {
-            debug_arrow_br.visible = true;
+        if (motorPower[3] > 0 && power) {
+            brDebugArrow.visible = true;
 
-            temp_position = new THREE.Vector3();
-            temp_position.setFromMatrixPosition(drone_body.children[3].matrixWorld);
+            positionTemp = new THREE.Vector3();
+            positionTemp.setFromMatrixPosition(droneBody.children[3].matrixWorld);
 
-            debug_arrow_br.position.x = temp_position.x;
-            debug_arrow_br.position.y = temp_position.y;
-            debug_arrow_br.position.z = temp_position.z;
-            debug_arrow_br.setDirection(motor_angle[3].normalize().negate());
-            debug_arrow_br.setLength(motor_power[3] * helper_arrow_scale, drone_height / 2, drone_height / 2);
+            brDebugArrow.position.x = positionTemp.x;
+            brDebugArrow.position.y = positionTemp.y;
+            brDebugArrow.position.z = positionTemp.z;
+            brDebugArrow.setDirection(motorAngle[3].normalize().negate());
+            brDebugArrow.setLength(motorPower[3] * helperArrowScale, droneHeight / 2, droneHeight / 2);
         } else {
-            debug_arrow_br.visible = false;
+            brDebugArrow.visible = false;
         }
 
-        temp_position = new THREE.Vector3();
-        temp_position.setFromMatrixPosition(drone_body.matrixWorld);
+        positionTemp = new THREE.Vector3();
+        positionTemp.setFromMatrixPosition(droneBody.matrixWorld);
 
-        debug_arrow_gravity.position.x = temp_position.x;
-        debug_arrow_gravity.position.y = temp_position.y;
-        debug_arrow_gravity.position.z = temp_position.z;
-        debug_arrow_gravity.setDirection(new THREE.Vector3(0, 1, 0).normalize().negate());
-        debug_arrow_gravity.setLength(gravity_strength / 2 * helper_arrow_scale, drone_height / 2, drone_height / 2);
+        gravityDebugArrow.position.x = positionTemp.x;
+        gravityDebugArrow.position.y = positionTemp.y;
+        gravityDebugArrow.position.z = positionTemp.z;
+        gravityDebugArrow.setDirection(new THREE.Vector3(0, 1, 0).normalize().negate());
+        gravityDebugArrow.setLength(gravityStrength / 2 * helperArrowScale, droneHeight / 2, droneHeight / 2);
     }
 };
