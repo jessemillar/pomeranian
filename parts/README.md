@@ -1,4 +1,4 @@
-We're contemplating using a [Photon](https://store.particle.io/?product=particle-photon) microcontroller from Particle for the brain. This could be handy because it's a small chip, has decent documentation, is cheap ($19), and has built-in WiFi connectivity.
+We're contemplating using a [Photon](https://store.particle.io/?product=particle-photon) ($19) microcontroller from Particle for the brain. This could be handy because it's a small chip, has decent documentation, is cheap, and has built-in WiFi connectivity.
 
 To control orientation and acceleration, we need an accelerometer and a gyroscope. The cheapest chip we've found that fits both an accelerometer and a gyroscope in a single chip is the [GY-521 MPU6050](https://www.addicore.com/GY-521-MPU6050-p/170.htm) ($4.79) from Addicore.
 

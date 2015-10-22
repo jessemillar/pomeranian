@@ -1,0 +1,1 @@
+This will end up being an iPhone/Android controller for managing the flight of the copter. There will also be a method for connecting to the copter with a PlayStation 3/4 Dualshock controller via a web browser/laptop combination.
