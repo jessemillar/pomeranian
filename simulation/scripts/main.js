@@ -10,7 +10,7 @@ var scale = 10, // So that the physics engine works properly
     drone_motor_weight = 0.1 * scale,
     drone_weight = (drone_body_weight + drone_motor_weight * 4) * scale,
     gravity_strength = 9.8 * scale,
-    camera_distance = 1 * scale,
+    camera_distance = 0.5 * scale,
     floor_size = 5 * scale,
     floor_thickness = 0.5 * scale,
     power = true,
@@ -32,7 +32,9 @@ var scale = 10, // So that the physics engine works properly
 document.addEventListener(
     'keydown',
     function(event) {
-        if (event.keyCode == 13) { // "Enter" key
+        if (event.keyCode == 70) { // "F" key
+            fpvCameraActive = !fpvCameraActive; // Toggle FPV camera
+        } else if (event.keyCode == 13) { // "Enter" key
             var death_ball = new Physijs.SphereMesh(
                 new THREE.SphereGeometry(drone_width * 1.5, 8, 8),
                 motor_material,

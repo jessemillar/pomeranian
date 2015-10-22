@@ -2,13 +2,14 @@ Physijs.scripts.worker = 'scripts/dependencies/physijs_worker.js';
 Physijs.scripts.ammo = 'ammo.js';
 
 var debug_arrow_fr, debug_arrow_fl, debug_arrow_bl, debug_arrow_br, debug_arrow_gravity; // Make these global because ghetto
+var fpvCameraActive = false;
 
 init = function() {
-    projector = new THREE.Projector;
+    projector = new THREE.Projector();
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.shadowMapEnabled = true;
+    renderer.shadowMap.enabled = true;
     document.getElementById('viewport').appendChild(renderer.domElement);
 
     render_stats = new Stats();
@@ -36,13 +37,16 @@ init = function() {
     );
 
     camera = new THREE.TargetCamera(
-        35, // Field of view
+        60, // Field of view
         window.innerWidth / window.innerHeight, // Aspect ratio
         0.1, // Near field
         500 // Far field
     );
-
     scene.add(camera);
+
+    // Ambient light
+    var light = new THREE.AmbientLight(0x404040); // soft white light
+    scene.add(light);
 
     // Light
     var spotLight = new THREE.SpotLight(0xffffff);
@@ -51,9 +55,7 @@ init = function() {
     spotLight.shadowMapWidth = 2048;
     spotLight.shadowMapHeight = 2048;
     spotLight.shadowCameraNear = 0.1;
-    // spotLight.shadowCameraFar = 5000;
     spotLight.shadowCameraFov = 30;
-    // spotLight.shadowCameraVisible = true;
     scene.add(spotLight);
 
     var ground_texture = new THREE.ImageUtils.loadTexture("images/checkerboard.png");
@@ -73,15 +75,6 @@ init = function() {
     ground.position.y = -floor_thickness / 2;
     ground.receiveShadow = true;
     scene.add(ground);
-
-    // Wall obstacle
-    // wall = new Physijs.BoxMesh(
-    //     new THREE.BoxGeometry(floor_size, floor_thickness, floor_size), // Get as close to a plane as possible
-    //     ground_material,
-    //     100 // Mass
-    // );
-    // wall.position.y = -floor_thickness / 2;
-    // scene.add(wall);
 
     // Drone
     drone_material = Physijs.createMaterial(
@@ -108,7 +101,17 @@ init = function() {
         0
     );
 
-    motor_geometry = new THREE.CylinderGeometry(motor_diameter, motor_diameter, drone_height / 2, 5);
+    // Wall obstacle
+    wall = new Physijs.BoxMesh(
+        new THREE.BoxGeometry(floor_size / 6, floor_size / 6, floor_size / 6), // Get as close to a plane as possible
+        motor_material,
+        100 // Mass
+    );
+    wall.position.y = floor_size / 6 / 2; // Make the wall start above the floor
+    wall.position.x = -floor_size / 3;
+    scene.add(wall);
+
+    motor_geometry = new THREE.CylinderGeometry(motor_diameter, motor_diameter, drone_height / 2, 10);
 
     drone_body = new Physijs.BoxMesh(
         new THREE.BoxGeometry(drone_depth, drone_height, drone_width),
@@ -185,6 +188,17 @@ init = function() {
         scene.add(debug_arrow_br);
     }
 
+    fpvCamera = new THREE.PerspectiveCamera(
+        60, // Field of view
+        window.innerWidth / window.innerHeight, // Aspect ratio
+        0.1, // Near field
+        500 // Far field
+    );
+    fpvCamera.position.x = -drone_width / 2;
+    fpvCamera.position.y = drone_height / 2;
+    fpvCamera.rotation.y = 90 * (Math.PI / 180); // Make the camera face the correct direction
+    drone_body.add(fpvCamera);
+
     scene.add(drone_body);
 
     if (debug) {
@@ -196,7 +210,7 @@ init = function() {
     camera.addTarget({
         name: "drone",
         targetObject: drone_body,
-        cameraPosition: new THREE.Vector3(-camera_distance, camera_distance, -camera_distance),
+        cameraPosition: new THREE.Vector3(camera_distance, camera_distance, -camera_distance),
         fixed: true,
         stiffness: 0.1,
         matchRotation: false
@@ -212,7 +226,11 @@ init = function() {
 render = function() {
     requestAnimationFrame(render);
     camera.update();
-    renderer.render(scene, camera);
+    if (fpvCameraActive) {
+        renderer.render(scene, fpvCamera);
+    } else {
+        renderer.render(scene, camera);
+    }
     render_stats.update();
 };
 
