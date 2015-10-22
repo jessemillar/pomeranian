@@ -35,7 +35,7 @@ document.addEventListener(
         if (event.keyCode == 13) { // "Enter" key
             var death_ball = new Physijs.SphereMesh(
                 new THREE.SphereGeometry(drone_width * 1.5, 8, 8),
-                ground_material,
+                motor_material,
                 drone_weight / 1000
             );
 
