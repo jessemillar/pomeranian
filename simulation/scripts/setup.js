@@ -31,7 +31,7 @@ init = function() {
     scene.addEventListener(
         'update',
         function() {
-            main();
+            simulate();
             scene.simulate(undefined, 1);
             physicsStats.update();
         }

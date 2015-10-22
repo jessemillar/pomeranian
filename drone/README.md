@@ -1,0 +1,1 @@
+This is where the actual logic for the drone is. We're currently spoofing some data values from the simulation. Eventually, things like the gyroscope, accelerometer, and motor controls will be integrated in a way that will work with an actual microcontroller.
